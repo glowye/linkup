@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LINKUP - Communication Improvement Assistant</title>
+    <title>LINKUP - Professional Communication Coach</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .suggestion-truncated {
@@ -127,14 +127,15 @@
         <div id="home-page" class="hidden">
             <div class="max-w-3xl mx-auto">
                 <div class="bg-white rounded-lg shadow-md p-8 mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Get Communication Improvement Suggestions</h2>
-                    <p class="text-gray-600 text-center mb-6">Supporting various communication scenarios for workplace, social, and family contexts</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Professional Communication Coach</h2>
+                    <p class="text-gray-600 text-center mb-6">Get expert guidance with specific scripts, actionable steps, and proven communication strategies</p>
                     
                     <form id="issue-form" class="space-y-4">
                         <div>
                             <textarea id="issue-question" rows="6" required
                                 class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
-                                placeholder="Describe your communication issue..."></textarea>
+                                placeholder="Describe your communication challenge... (e.g., 'I need to have a difficult conversation with my manager about workload', 'My colleague keeps interrupting me in meetings', 'I struggle to express my needs in my relationship')"></textarea>
+                            <p class="text-xs text-gray-500 mt-2">💡 Tip: Be specific about the situation, who's involved, and what outcome you want</p>
                         </div>
                         <button type="submit" class="w-full text-white py-3 rounded-lg hover:opacity-90 text-lg font-medium" style="background-color: rgba(215,0,80,1);">
                             Submit and Get Suggestions
@@ -160,6 +161,9 @@
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Suggestion
+                                </th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Sources
                                 </th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Execution Check
