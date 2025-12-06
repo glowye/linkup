@@ -85,6 +85,78 @@ function setupEventListeners() {
         const question = document.getElementById('issue-question').value;
         await submitIssue(question);
     });
+
+    // Scenario buttons
+    document.querySelectorAll('.scenario-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove active class from all buttons
+            document.querySelectorAll('.scenario-btn').forEach(b => {
+                b.classList.remove('border-pink-500', 'bg-pink-50', 'text-pink-700');
+                b.classList.add('border-gray-300');
+            });
+            // Add active class to clicked button
+            btn.classList.add('border-pink-500', 'bg-pink-50', 'text-pink-700');
+            btn.classList.remove('border-gray-300');
+            
+            // Update placeholder based on scenario
+            const scenario = btn.dataset.scenario;
+            const textarea = document.getElementById('issue-question');
+            const placeholders = {
+                workplace: "Describe your workplace communication challenge... (e.g., 'I need to give feedback to a team member', 'My manager doesn't listen to my ideas')",
+                family: "Describe your family communication challenge... (e.g., 'I struggle to set boundaries with my parents', 'My partner and I argue about money')",
+                social: "Describe your social communication challenge... (e.g., 'I'm nervous about networking events', 'I don't know how to make small talk')",
+                conflict: "Describe your conflict situation... (e.g., 'I need to resolve a disagreement with a colleague', 'My friend and I had a misunderstanding')"
+            };
+            textarea.placeholder = placeholders[scenario] || textarea.placeholder;
+        });
+    });
+
+    // Refresh topics button
+    document.getElementById('refresh-topics').addEventListener('click', () => {
+        loadTopicCards();
+    });
+}
+
+// Load topic cards (Pi-style)
+function loadTopicCards() {
+    const topicCards = document.getElementById('topic-cards');
+    const topics = [
+        { icon: '💼', title: 'How to give constructive feedback', desc: 'Learn to provide feedback that helps, not hurts' },
+        { icon: '🗣️', title: 'Setting boundaries at work', desc: 'Say no professionally without burning bridges' },
+        { icon: '👥', title: 'Handling difficult conversations', desc: 'Navigate tough talks with confidence' },
+        { icon: '🤝', title: 'Building rapport with colleagues', desc: 'Create stronger workplace relationships' },
+        { icon: '💬', title: 'Active listening techniques', desc: 'Truly hear and understand others' },
+        { icon: '⚡', title: 'Dealing with interruptions', desc: 'Handle interruptions gracefully' },
+        { icon: '🎯', title: 'Expressing needs clearly', desc: 'Communicate what you want effectively' },
+        { icon: '😤', title: 'Managing emotional reactions', desc: 'Stay calm in heated moments' },
+        { icon: '🤔', title: 'Asking for what you deserve', desc: 'Advocate for yourself professionally' },
+    ];
+
+    // Shuffle and take 6 random topics
+    const shuffled = topics.sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 6);
+
+    topicCards.innerHTML = selected.map(topic => `
+        <div class="topic-card bg-gradient-to-br from-pink-50 to-red-50 rounded-lg p-4 border border-pink-200 cursor-pointer hover:shadow-lg transition-all transform hover:scale-105" 
+             onclick="useTopic('${topic.title}')">
+            <div class="flex items-start space-x-3">
+                <span class="text-2xl">${topic.icon}</span>
+                <div class="flex-1">
+                    <h4 class="font-semibold text-gray-800 mb-1">${topic.title}</h4>
+                    <p class="text-xs text-gray-600">${topic.desc}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Use topic
+function useTopic(topic) {
+    const textarea = document.getElementById('issue-question');
+    textarea.value = topic;
+    textarea.focus();
+    // Scroll to form
+    textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 // Show page
@@ -98,6 +170,8 @@ function showPage(page) {
         navHome.classList.add('text-black');
         navRecords.classList.remove('text-blue-600', 'font-semibold');
         navRecords.classList.add('text-gray-700');
+        // Load topic cards when showing home page
+        loadTopicCards();
     } else if (page === 'records') {
         homePage.classList.add('hidden');
         recordsPage.classList.remove('hidden');
@@ -274,7 +348,7 @@ async function loadRecords() {
         tbody.innerHTML = '';
 
         if (issues.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No records yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No records yet</td></tr>';
             return;
         }
 
@@ -292,6 +366,18 @@ async function loadRecords() {
             const suggestionId = `suggestion-${issue.id}`;
             const isLong = suggestion.length > 200; // Consider long if more than 200 chars
             
+            // Format sources
+            const sources = issue.sources || [];
+            const sourcesHtml = sources.length > 0 
+                ? `<div class="space-y-1">
+                    ${sources.map(source => `
+                        <div class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                            📚 ${escapeHtml(source)}
+                        </div>
+                    `).join('')}
+                   </div>`
+                : '<span class="text-xs text-gray-400">No sources</span>';
+            
             row.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${date}</td>
                 <td class="px-6 py-4 text-sm text-gray-900 max-w-xs">${escapeHtml(issue.question)}</td>
@@ -300,6 +386,9 @@ async function loadRecords() {
                         ${formattedSuggestion}
                     </div>
                     ${isLong ? `<button onclick="toggleSuggestion(${issue.id})" class="mt-2 text-blue-500 hover:text-blue-700 text-xs underline cursor-pointer" id="toggle-${issue.id}">Show more</button>` : ''}
+                </td>
+                <td class="px-6 py-4 text-sm max-w-xs">
+                    ${sourcesHtml}
                 </td>
                 <td class="px-6 py-4 text-sm">
                     <div class="flex items-center space-x-2">
@@ -323,15 +412,24 @@ async function loadRecords() {
     }
 }
 
-// Format suggestion text with proper line breaks
+// Format suggestion text with proper line breaks and convert URLs to links
 function formatSuggestion(text) {
     if (!text) return 'No suggestion';
     
-    // Escape HTML to prevent XSS
+    // Escape HTML to prevent XSS (but preserve URLs)
     let formatted = escapeHtml(text);
     
     // Remove leading whitespace/newlines to ensure first line is left-aligned
     formatted = formatted.trimStart();
+    
+    // Convert URLs to clickable links
+    // Match URLs (http://, https://, www.)
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/g;
+    formatted = formatted.replace(urlRegex, (url) => {
+        // Ensure URL has protocol
+        const href = url.startsWith('http') ? url : `https://${url}`;
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 underline">${url}</a>`;
+    });
     
     // Keep the text as-is with line breaks preserved
     // CSS white-space: pre-wrap will handle the formatting
@@ -384,3 +482,4 @@ function escapeHtml(text) {
 // Expose functions to global scope for onclick usage
 window.saveExecutionCheck = saveExecutionCheck;
 window.toggleSuggestion = toggleSuggestion;
+window.useTopic = useTopic;
