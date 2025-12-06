@@ -18,6 +18,7 @@ const logoutBtn = document.getElementById('logout-btn');
 const showLoginBtn = document.getElementById('show-login');
 const showRegisterBtn = document.getElementById('show-register');
 const navHome = document.getElementById('nav-home');
+const navGallery = document.getElementById('nav-gallery');
 const navRecords = document.getElementById('nav-records');
 const navLinks = document.getElementById('nav-links');
 
@@ -26,14 +27,18 @@ let currentPage = 'home';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    // Ensure home-page is hidden initially
-    document.getElementById('home-page').classList.add('hidden');
-    document.getElementById('records-page').classList.add('hidden');
+    // Show home page by default for all users
+    showPage('home');
     
     if (authToken) {
         checkAuth();
     } else {
-        showAuthSection();
+        // Show navigation but keep auth buttons visible
+        navLinks.classList.remove('hidden');
+        showLoginBtn.classList.remove('hidden');
+        showRegisterBtn.classList.remove('hidden');
+        userWelcome.classList.add('hidden');
+        logoutBtn.classList.add('hidden');
     }
     setupEventListeners();
 });
@@ -45,20 +50,40 @@ function setupEventListeners() {
         showPage('home');
     });
     
+    navGallery.addEventListener('click', () => {
+        showPage('gallery');
+    });
+    
     navRecords.addEventListener('click', () => {
+        // Check if user is logged in
+        if (!authToken) {
+            showMessage('Please login or register to view your works', 'error');
+            // Show login modal
+            showAuthModal();
+            return;
+        }
         showPage('records');
     });
 
     // Show login form
     showLoginBtn.addEventListener('click', () => {
+        showAuthModal();
         loginForm.classList.remove('hidden');
         registerForm.classList.add('hidden');
     });
 
     // Show register form
     showRegisterBtn.addEventListener('click', () => {
+        showAuthModal();
         registerForm.classList.remove('hidden');
         loginForm.classList.add('hidden');
+    });
+    
+    // Close auth modal when clicking outside
+    authSection.addEventListener('click', (e) => {
+        if (e.target === authSection) {
+            hideAuthModal();
+        }
     });
 
     // Login form submit
@@ -166,47 +191,52 @@ function useTopic(topic) {
 // Show page
 function showPage(page) {
     currentPage = page;
-    // Hide auth section when showing pages
-    authSection.classList.add('hidden');
+    const homePageEl = document.getElementById('home-page');
+    const galleryPageEl = document.getElementById('gallery-page');
+    const recordsPageEl = document.getElementById('records-page');
+    
+    // Hide all pages first
+    homePageEl.classList.add('hidden');
+    galleryPageEl.classList.add('hidden');
+    recordsPageEl.classList.add('hidden');
+    
+    // Reset all nav styles
+    navHome.classList.remove('text-blue-600', 'font-semibold', 'text-black');
+    navGallery.classList.remove('text-blue-600', 'font-semibold', 'text-black');
+    navRecords.classList.remove('text-blue-600', 'font-semibold', 'text-black');
+    navHome.classList.add('text-gray-700');
+    navGallery.classList.add('text-gray-700');
+    navRecords.classList.add('text-gray-700');
     
     if (page === 'home') {
-        homePage.classList.remove('hidden');
-        homePage.style.display = 'block';
-        recordsPage.classList.add('hidden');
-        recordsPage.style.display = 'none';
-        navHome.classList.add('font-semibold');
+        homePageEl.classList.remove('hidden');
+        navHome.classList.add('text-black', 'font-semibold');
         navHome.classList.remove('text-gray-700');
-        navHome.classList.add('text-black');
-        navRecords.classList.remove('text-blue-600', 'font-semibold');
-        navRecords.classList.add('text-gray-700');
         // Load topic cards when showing home page
         loadTopicCards();
+    } else if (page === 'gallery') {
+        galleryPageEl.classList.remove('hidden');
+        navGallery.classList.add('text-blue-600', 'font-semibold');
+        navGallery.classList.remove('text-gray-700');
     } else if (page === 'records') {
-        homePage.classList.add('hidden');
-        homePage.style.display = 'none';
-        recordsPage.classList.remove('hidden');
-        recordsPage.style.display = 'block';
+        recordsPageEl.classList.remove('hidden');
         navRecords.classList.add('text-blue-600', 'font-semibold');
         navRecords.classList.remove('text-gray-700');
-        navHome.classList.remove('text-blue-600', 'font-semibold');
-        navHome.classList.add('text-black');
         loadRecords();
     }
 }
 
-// Show auth section
-function showAuthSection() {
+// Show auth modal
+function showAuthModal() {
     authSection.classList.remove('hidden');
-    homePage.classList.add('hidden');
-    recordsPage.classList.add('hidden');
-    // Ensure they're also set to display: none
-    homePage.style.display = 'none';
-    recordsPage.style.display = 'none';
-    navLinks.classList.add('hidden');
-    userWelcome.classList.add('hidden');
-    logoutBtn.classList.add('hidden');
-    showLoginBtn.classList.remove('hidden');
-    showRegisterBtn.classList.remove('hidden');
+    // Show login form by default
+    document.getElementById('login-form').classList.remove('hidden');
+    document.getElementById('register-form').classList.add('hidden');
+}
+
+// Hide auth modal
+function hideAuthModal() {
+    authSection.classList.add('hidden');
 }
 
 // Show message
@@ -273,6 +303,7 @@ async function register(username, email, password) {
         showMessage('Registration successful, please login', 'success');
         loginForm.classList.remove('hidden');
         registerForm.classList.add('hidden');
+        // Keep modal open for login
     } catch (error) {
         showMessage(error.message, 'error');
     }
@@ -300,6 +331,7 @@ async function login(username, password) {
 
         authToken = data.access_token;
         localStorage.setItem('authToken', authToken);
+        hideAuthModal();
         await checkAuth();
         showMessage('Login successful', 'success');
     } catch (error) {
@@ -331,11 +363,13 @@ function logout() {
     localStorage.removeItem('authToken');
     userWelcome.classList.add('hidden');
     logoutBtn.classList.add('hidden');
-    showAuthSection();
+    hideAuthModal();
     showLoginBtn.classList.remove('hidden');
     showRegisterBtn.classList.remove('hidden');
     document.getElementById('login-username').value = '';
     document.getElementById('login-password').value = '';
+    // Redirect to home page
+    showPage('home');
 }
 
 // Submit issue
@@ -497,3 +531,4 @@ function escapeHtml(text) {
 window.saveExecutionCheck = saveExecutionCheck;
 window.toggleSuggestion = toggleSuggestion;
 window.useTopic = useTopic;
+window.hideAuthModal = hideAuthModal;
