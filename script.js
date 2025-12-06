@@ -26,6 +26,10 @@ let currentPage = 'home';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    // Ensure home-page is hidden initially
+    document.getElementById('home-page').classList.add('hidden');
+    document.getElementById('records-page').classList.add('hidden');
+    
     if (authToken) {
         checkAuth();
     } else {
@@ -162,6 +166,9 @@ function useTopic(topic) {
 // Show page
 function showPage(page) {
     currentPage = page;
+    // Hide auth section when showing pages
+    authSection.classList.add('hidden');
+    
     if (page === 'home') {
         homePage.classList.remove('hidden');
         recordsPage.classList.add('hidden');
