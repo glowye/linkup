@@ -171,7 +171,9 @@ function showPage(page) {
     
     if (page === 'home') {
         homePage.classList.remove('hidden');
+        homePage.style.display = 'block';
         recordsPage.classList.add('hidden');
+        recordsPage.style.display = 'none';
         navHome.classList.add('font-semibold');
         navHome.classList.remove('text-gray-700');
         navHome.classList.add('text-black');
@@ -181,7 +183,9 @@ function showPage(page) {
         loadTopicCards();
     } else if (page === 'records') {
         homePage.classList.add('hidden');
+        homePage.style.display = 'none';
         recordsPage.classList.remove('hidden');
+        recordsPage.style.display = 'block';
         navRecords.classList.add('text-blue-600', 'font-semibold');
         navRecords.classList.remove('text-gray-700');
         navHome.classList.remove('text-blue-600', 'font-semibold');
@@ -195,6 +199,9 @@ function showAuthSection() {
     authSection.classList.remove('hidden');
     homePage.classList.add('hidden');
     recordsPage.classList.add('hidden');
+    // Ensure they're also set to display: none
+    homePage.style.display = 'none';
+    recordsPage.style.display = 'none';
     navLinks.classList.add('hidden');
     userWelcome.classList.add('hidden');
     logoutBtn.classList.add('hidden');
