@@ -75,17 +75,35 @@ function setupEventListeners() {
     });
 
     // Show login form
-    showLoginBtn.addEventListener('click', () => {
-        showAuthModal();
-        loginForm.classList.remove('hidden');
-        registerForm.classList.add('hidden');
+    showLoginBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const authSectionEl = document.getElementById('auth-section');
+        const loginFormEl = document.getElementById('login-form');
+        const registerFormEl = document.getElementById('register-form');
+        
+        // Show modal
+        authSectionEl.classList.remove('hidden');
+        authSectionEl.style.display = 'flex';
+        
+        // Show login form, hide register form
+        registerFormEl.classList.add('hidden');
+        loginFormEl.classList.remove('hidden');
     });
 
     // Show register form
-    showRegisterBtn.addEventListener('click', () => {
-        showAuthModal();
-        registerForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
+    showRegisterBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const authSectionEl = document.getElementById('auth-section');
+        const loginFormEl = document.getElementById('login-form');
+        const registerFormEl = document.getElementById('register-form');
+        
+        // Show modal
+        authSectionEl.classList.remove('hidden');
+        authSectionEl.style.display = 'flex';
+        
+        // Show register form, hide login form
+        loginFormEl.classList.add('hidden');
+        registerFormEl.classList.remove('hidden');
     });
     
     // Close auth modal when clicking outside
@@ -241,12 +259,12 @@ function showAuthModal() {
     const loginFormEl = document.getElementById('login-form');
     const registerFormEl = document.getElementById('register-form');
     
-    // Ensure forms are properly hidden first
-    loginFormEl.classList.add('hidden');
-    registerFormEl.classList.add('hidden');
-    
-    // Show modal and login form by default
+    // Show modal
     authSectionEl.classList.remove('hidden');
+    authSectionEl.style.display = 'flex';
+    
+    // Show login form by default, hide register form
+    registerFormEl.classList.add('hidden');
     loginFormEl.classList.remove('hidden');
 }
 
@@ -257,6 +275,7 @@ function hideAuthModal() {
     const registerFormEl = document.getElementById('register-form');
     
     authSectionEl.classList.add('hidden');
+    authSectionEl.style.display = 'none';
     loginFormEl.classList.add('hidden');
     registerFormEl.classList.add('hidden');
 }
