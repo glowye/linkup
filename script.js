@@ -27,6 +27,15 @@ let currentPage = 'home';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    // Ensure auth modal is hidden on load
+    const authSection = document.getElementById('auth-section');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    
+    authSection.classList.add('hidden');
+    loginForm.classList.add('hidden');
+    registerForm.classList.add('hidden');
+    
     // Show home page by default for all users
     showPage('home');
     
@@ -228,15 +237,28 @@ function showPage(page) {
 
 // Show auth modal
 function showAuthModal() {
-    authSection.classList.remove('hidden');
-    // Show login form by default
-    document.getElementById('login-form').classList.remove('hidden');
-    document.getElementById('register-form').classList.add('hidden');
+    const authSectionEl = document.getElementById('auth-section');
+    const loginFormEl = document.getElementById('login-form');
+    const registerFormEl = document.getElementById('register-form');
+    
+    // Ensure forms are properly hidden first
+    loginFormEl.classList.add('hidden');
+    registerFormEl.classList.add('hidden');
+    
+    // Show modal and login form by default
+    authSectionEl.classList.remove('hidden');
+    loginFormEl.classList.remove('hidden');
 }
 
 // Hide auth modal
 function hideAuthModal() {
-    authSection.classList.add('hidden');
+    const authSectionEl = document.getElementById('auth-section');
+    const loginFormEl = document.getElementById('login-form');
+    const registerFormEl = document.getElementById('register-form');
+    
+    authSectionEl.classList.add('hidden');
+    loginFormEl.classList.add('hidden');
+    registerFormEl.classList.add('hidden');
 }
 
 // Show message
