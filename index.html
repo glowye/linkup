@@ -26,6 +26,30 @@
             padding-left: 0;
             text-indent: 0;
         }
+        .topic-card {
+            transition: all 0.3s ease;
+        }
+        .topic-card:hover {
+            transform: translateY(-2px);
+        }
+        .scenario-btn.active {
+            border-color: rgba(215,0,80,1);
+            background-color: rgba(215,0,80,0.1);
+            color: rgba(215,0,80,1);
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .topic-card {
+            animation: fadeIn 0.5s ease-out;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
