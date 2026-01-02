@@ -1,7 +1,7 @@
 // API Base URL - automatically detect environment
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8000'
-    : 'https://linkup-backend-production-ebe5.up.railway.app';
+    : 'https://linkup-backend-oz1f.vercel.app';
 
 // Store token
 let authToken = localStorage.getItem('authToken');
