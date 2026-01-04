@@ -233,6 +233,38 @@ function loadTopicCards() {
     `).join('');
 }
 
+// Download mind map
+function downloadMindmap(mindmapId, title) {
+    // Map mindmap IDs to file names
+    const mindmapFiles = {
+        'listening-mindmap': 'listening-mindmap.png',
+        'responding-mindmap': 'responding-mindmap.png',
+        'reading-people-mindmap': 'reading-people-mindmap.png',
+        'asking-help-mindmap': 'asking-help-mindmap.png',
+        'refusing-mindmap': 'refusing-mindmap.png',
+        'persuading-mindmap': 'persuading-mindmap.png'
+    };
+    
+    const filename = mindmapFiles[mindmapId] || 'mindmap.png';
+    const filepath = `mindmaps/${filename}`;
+    
+    // Create a temporary link element to trigger download
+    const link = document.createElement('a');
+    link.href = filepath;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    
+    // Trigger download
+    link.click();
+    
+    // Clean up
+    document.body.removeChild(link);
+    
+    // Show message
+    showMessage(`Downloading mind map: ${title}`, 'success');
+}
+
 // Use topic
 function useTopic(topic) {
     const textarea = document.getElementById('issue-question');
@@ -600,3 +632,4 @@ window.saveExecutionCheck = saveExecutionCheck;
 window.toggleSuggestion = toggleSuggestion;
 window.useTopic = useTopic;
 window.hideAuthModal = hideAuthModal;
+window.downloadMindmap = downloadMindmap;
