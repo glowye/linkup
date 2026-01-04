@@ -168,40 +168,67 @@ function setupEventListeners() {
     });
 
     // Refresh topics button
-    document.getElementById('refresh-topics').addEventListener('click', () => {
-        loadTopicCards();
-    });
+    // Removed refresh-topics button - now using fixed Communication Toolkit
 }
 
-// Load topic cards (Pi-style)
+// Load topic cards (Communication Toolkit - 沟通锦囊)
 function loadTopicCards() {
     const topicCards = document.getElementById('topic-cards');
     const topics = [
-        { icon: '💼', title: 'How to give constructive feedback', desc: 'Learn to provide feedback that helps, not hurts' },
-        { icon: '🗣️', title: 'Setting boundaries at work', desc: 'Say no professionally without burning bridges' },
-        { icon: '👥', title: 'Handling difficult conversations', desc: 'Navigate tough talks with confidence' },
-        { icon: '🤝', title: 'Building rapport with colleagues', desc: 'Create stronger workplace relationships' },
-        { icon: '💬', title: 'Active listening techniques', desc: 'Truly hear and understand others' },
-        { icon: '⚡', title: 'Dealing with interruptions', desc: 'Handle interruptions gracefully' },
-        { icon: '🎯', title: 'Expressing needs clearly', desc: 'Communicate what you want effectively' },
-        { icon: '😤', title: 'Managing emotional reactions', desc: 'Stay calm in heated moments' },
-        { icon: '🤔', title: 'Asking for what you deserve', desc: 'Advocate for yourself professionally' },
+        { 
+            icon: '👂', 
+            title: 'How to Listen to Improve Communication Efficiency', 
+            desc: 'Master the art of active listening to enhance understanding',
+            mindmapId: 'listening-mindmap'
+        },
+        { 
+            icon: '💬', 
+            title: 'How to Respond to Guide Others\' Needs', 
+            desc: 'Learn effective response techniques to steer conversations',
+            mindmapId: 'responding-mindmap'
+        },
+        { 
+            icon: '👤', 
+            title: 'How to Read People to Use Communication Strategies', 
+            desc: 'Develop skills to understand others and adapt your approach',
+            mindmapId: 'reading-people-mindmap'
+        },
+        { 
+            icon: '🙋', 
+            title: 'How to Ask for Help to Gain More Resources', 
+            desc: 'Strategies for requesting assistance effectively',
+            mindmapId: 'asking-help-mindmap'
+        },
+        { 
+            icon: '🚫', 
+            title: 'How to Refuse to Manage Relationship Boundaries', 
+            desc: 'Say no gracefully while maintaining healthy relationships',
+            mindmapId: 'refusing-mindmap'
+        },
+        { 
+            icon: '💡', 
+            title: 'How to Persuade Others to Support You', 
+            desc: 'Build compelling arguments that win support',
+            mindmapId: 'persuading-mindmap'
+        },
     ];
 
-    // Shuffle and take 6 random topics
-    const shuffled = topics.sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 6);
-
-    topicCards.innerHTML = selected.map(topic => `
-        <div class="topic-card bg-gradient-to-br from-pink-50 to-red-50 rounded-lg p-4 border border-pink-200 cursor-pointer hover:shadow-lg transition-all transform hover:scale-105" 
-             onclick="useTopic('${topic.title}')">
-            <div class="flex items-start space-x-3">
+    topicCards.innerHTML = topics.map(topic => `
+        <div class="topic-card bg-gradient-to-br from-pink-50 to-red-50 rounded-lg p-4 border border-pink-200 hover:shadow-lg transition-all transform hover:scale-105">
+            <div class="flex items-start space-x-3 mb-3">
                 <span class="text-2xl">${topic.icon}</span>
                 <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800 mb-1">${topic.title}</h4>
+                    <h4 class="font-semibold text-gray-800 mb-1 text-sm leading-tight">${topic.title}</h4>
                     <p class="text-xs text-gray-600">${topic.desc}</p>
                 </div>
             </div>
+            <button onclick="downloadMindmap('${topic.mindmapId}', '${topic.title}')" 
+                    class="w-full mt-2 bg-pink-500 hover:bg-pink-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                Download Mind Map
+            </button>
         </div>
     `).join('');
 }
