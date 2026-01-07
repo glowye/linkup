@@ -80,15 +80,20 @@
         .mindmap-display {
             position: relative;
             overflow: hidden;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .mindmap-display img {
             display: block;
             width: 100%;
             height: auto;
+            max-width: 100%;
             transition: transform 0.3s ease;
         }
         .mindmap-card:hover .mindmap-display img {
-            transform: scale(1.02);
+            transform: scale(1.01);
         }
         .mindmap-display button {
             z-index: 10;
