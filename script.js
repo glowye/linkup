@@ -179,73 +179,110 @@ function loadTopicCards() {
             icon: '👂', 
             title: 'How to Listen to Improve Communication Efficiency', 
             desc: 'Master the art of active listening to enhance understanding',
-            mindmapId: 'listening-mindmap'
+            mindmapId: 'listening-mindmap',
+            filename: 'How to Listen More Effectively for Better Communication.png',
+            tags: ['listening', 'communication']
         },
         { 
             icon: '💬', 
             title: 'How to Respond to Guide Others\' Needs', 
             desc: 'Learn effective response techniques to steer conversations',
-            mindmapId: 'responding-mindmap'
+            mindmapId: 'responding-mindmap',
+            filename: 'How to Respond to Elicit the Other Person\'s Needs.png',
+            tags: ['responding', 'needs']
         },
         { 
             icon: '👤', 
             title: 'How to Read People to Use Communication Strategies', 
             desc: 'Develop skills to understand others and adapt your approach',
-            mindmapId: 'reading-people-mindmap'
+            mindmapId: 'reading-people-mindmap',
+            filename: null, // Not available yet
+            tags: ['reading', 'strategies']
         },
         { 
             icon: '🙋', 
-            title: 'How to Ask for Help to Gain More Resources', 
+            title: 'How to Ask for Help to Get More Resources', 
             desc: 'Strategies for requesting assistance effectively',
-            mindmapId: 'asking-help-mindmap'
+            mindmapId: 'asking-help-mindmap',
+            filename: 'How to Ask for Help and Gain More Resources.png',
+            tags: ['help', 'resources']
         },
         { 
             icon: '🚫', 
             title: 'How to Refuse to Manage Relationship Boundaries', 
             desc: 'Say no gracefully while maintaining healthy relationships',
-            mindmapId: 'refusing-mindmap'
+            mindmapId: 'refusing-mindmap',
+            filename: null, // Not available yet
+            tags: ['refusing', 'boundaries']
         },
         { 
             icon: '💡', 
-            title: 'How to Persuade Others to Support You', 
+            title: 'How to Persuade to Get Others\' Support', 
             desc: 'Build compelling arguments that win support',
-            mindmapId: 'persuading-mindmap'
+            mindmapId: 'persuading-mindmap',
+            filename: null, // Not available yet
+            tags: ['persuading', 'support']
         },
     ];
 
     topicCards.innerHTML = topics.map(topic => `
-        <div class="topic-card bg-gradient-to-br from-pink-50 to-red-50 rounded-lg p-4 border border-pink-200 hover:shadow-lg transition-all transform hover:scale-105">
-            <div class="flex items-start space-x-3 mb-3">
-                <span class="text-2xl">${topic.icon}</span>
-                <div class="flex-1">
-                    <h4 class="font-semibold text-gray-800 mb-1 text-sm leading-tight">${topic.title}</h4>
-                    <p class="text-xs text-gray-600">${topic.desc}</p>
+        <div class="mindmap-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+            ${topic.filename ? `
+                <div class="mindmap-preview relative bg-gray-50 h-48 overflow-hidden">
+                    <img src="mindmaps/${topic.filename}" 
+                         alt="${topic.title}" 
+                         class="w-full h-full object-contain p-2"
+                         onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-gray-400\\'><svg class=\\'w-16 h-16\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\\'></path></svg></div>'">
                 </div>
+            ` : `
+                <div class="mindmap-preview bg-gray-50 h-48 flex items-center justify-center">
+                    <div class="text-center text-gray-400">
+                        <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <p class="text-xs">Coming Soon</p>
+                    </div>
+                </div>
+            `}
+            <div class="p-5">
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl">${topic.icon}</span>
+                        <h4 class="font-semibold text-gray-900 text-base leading-tight">${topic.title}</h4>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-600 mb-4 leading-relaxed">${topic.desc}</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex flex-wrap gap-2">
+                        ${topic.tags.map(tag => `
+                            <span class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">${tag}</span>
+                        `).join('')}
+                    </div>
+                </div>
+                ${topic.filename ? `
+                    <button onclick="downloadMindmap('${topic.mindmapId}', '${topic.filename}', '${topic.title}')" 
+                            class="w-full mt-4 bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white text-sm font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-md transform hover:scale-[1.02]">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download PNG
+                    </button>
+                ` : `
+                    <button disabled
+                            class="w-full mt-4 bg-gray-200 text-gray-400 text-sm font-medium py-3 px-4 rounded-lg cursor-not-allowed flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Coming Soon
+                    </button>
+                `}
             </div>
-            <button onclick="downloadMindmap('${topic.mindmapId}', '${topic.title}')" 
-                    class="w-full mt-2 bg-pink-500 hover:bg-pink-600 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors flex items-center justify-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                </svg>
-                Download Mind Map
-            </button>
         </div>
     `).join('');
 }
 
 // Download mind map
-function downloadMindmap(mindmapId, title) {
-    // Map mindmap IDs to file names
-    const mindmapFiles = {
-        'listening-mindmap': 'listening-mindmap.png',
-        'responding-mindmap': 'responding-mindmap.png',
-        'reading-people-mindmap': 'reading-people-mindmap.png',
-        'asking-help-mindmap': 'asking-help-mindmap.png',
-        'refusing-mindmap': 'refusing-mindmap.png',
-        'persuading-mindmap': 'persuading-mindmap.png'
-    };
-    
-    const filename = mindmapFiles[mindmapId] || 'mindmap.png';
+function downloadMindmap(mindmapId, filename, title) {
     const filepath = `mindmaps/${filename}`;
     
     // Create a temporary link element to trigger download
@@ -259,10 +296,12 @@ function downloadMindmap(mindmapId, title) {
     link.click();
     
     // Clean up
-    document.body.removeChild(link);
+    setTimeout(() => {
+        document.body.removeChild(link);
+    }, 100);
     
     // Show message
-    showMessage(`Downloading mind map: ${title}`, 'success');
+    showMessage(`Downloading: ${title}`, 'success');
 }
 
 // Use topic

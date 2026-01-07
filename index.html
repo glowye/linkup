@@ -71,6 +71,18 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
+        .mindmap-card {
+            transition: all 0.3s ease;
+        }
+        .mindmap-card:hover {
+            transform: translateY(-4px);
+        }
+        .mindmap-preview img {
+            transition: transform 0.3s ease;
+        }
+        .mindmap-card:hover .mindmap-preview img {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -225,13 +237,15 @@
 
                 <!-- Communication Toolkit (沟通锦囊) -->
                 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800 flex items-center">
-                            💡 Communication Toolkit
-                        </h3>
-                        <span class="text-sm text-gray-500">Essential communication skills</span>
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900 flex items-center mb-2">
+                                💡 Communication Toolkit
+                            </h3>
+                            <p class="text-sm text-gray-500">Essential communication skills with downloadable mind maps</p>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="topic-cards">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="topic-cards">
                         <!-- Topic cards will be dynamically generated -->
                     </div>
                 </div>
