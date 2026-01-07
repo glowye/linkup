@@ -228,54 +228,41 @@ function loadTopicCards() {
     topicCards.innerHTML = topics.map(topic => `
         <div class="mindmap-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
             ${topic.filename ? `
-                <div class="mindmap-preview relative bg-gray-50 h-48 overflow-hidden">
+                <div class="mindmap-display relative bg-white group">
                     <img src="mindmaps/${topic.filename}" 
                          alt="${topic.title}" 
-                         class="w-full h-full object-contain p-2"
-                         onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-gray-400\\'><svg class=\\'w-16 h-16\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\\'></path></svg></div>'">
+                         class="w-full h-auto object-contain"
+                         onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-64 text-gray-400\\'><svg class=\\'w-16 h-16\\' fill=\\'none\\' stroke=\\'currentColor\\' viewBox=\\'0 0 24 24\\'><path stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\' stroke-width=\\'2\\' d=\\'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z\\'></path></svg></div>'">
+                    <button onclick="downloadMindmap('${topic.mindmapId}', '${topic.filename}', '${topic.title}')" 
+                            class="absolute top-3 right-3 bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 shadow-md hover:shadow-lg rounded-lg p-2.5 transition-all duration-200 opacity-0 group-hover:opacity-100 flex items-center justify-center border border-gray-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                    </button>
                 </div>
             ` : `
-                <div class="mindmap-preview bg-gray-50 h-48 flex items-center justify-center">
+                <div class="mindmap-display bg-gray-50 h-64 flex items-center justify-center">
                     <div class="text-center text-gray-400">
                         <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
-                        <p class="text-xs">Coming Soon</p>
+                        <p class="text-sm font-medium">Coming Soon</p>
                     </div>
                 </div>
             `}
-            <div class="p-5">
-                <div class="flex items-start justify-between mb-3">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-2xl">${topic.icon}</span>
-                        <h4 class="font-semibold text-gray-900 text-base leading-tight">${topic.title}</h4>
+            <div class="p-5 border-t border-gray-100">
+                <div class="flex items-start space-x-3 mb-2">
+                    <span class="text-2xl flex-shrink-0">${topic.icon}</span>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-gray-900 text-base leading-tight mb-1">${topic.title}</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">${topic.desc}</p>
                     </div>
                 </div>
-                <p class="text-sm text-gray-600 mb-4 leading-relaxed">${topic.desc}</p>
-                <div class="flex items-center justify-between">
-                    <div class="flex flex-wrap gap-2">
-                        ${topic.tags.map(tag => `
-                            <span class="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded-full">${tag}</span>
-                        `).join('')}
-                    </div>
+                <div class="flex flex-wrap gap-2 mt-3">
+                    ${topic.tags.map(tag => `
+                        <span class="px-2.5 py-1 text-xs bg-gray-100 text-gray-600 rounded-full font-medium">${tag}</span>
+                    `).join('')}
                 </div>
-                ${topic.filename ? `
-                    <button onclick="downloadMindmap('${topic.mindmapId}', '${topic.filename}', '${topic.title}')" 
-                            class="w-full mt-4 bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white text-sm font-medium py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-md transform hover:scale-[1.02]">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                        </svg>
-                        Download PNG
-                    </button>
-                ` : `
-                    <button disabled
-                            class="w-full mt-4 bg-gray-200 text-gray-400 text-sm font-medium py-3 px-4 rounded-lg cursor-not-allowed flex items-center justify-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Coming Soon
-                    </button>
-                `}
             </div>
         </div>
     `).join('');
