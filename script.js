@@ -228,22 +228,14 @@ function loadTopicCards() {
     topicCards.innerHTML = topics.map(topic => `
         <div class="mindmap-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
             ${topic.filename ? `
-                <div class="mindmap-display relative bg-gray-50 group overflow-hidden">
-                    <img src="./mindmaps/${topic.filename}" 
+                <div class="mindmap-display relative bg-white group">
+                    <img src="mindmaps/${topic.filename}" 
                          alt="${topic.title}" 
-                         class="w-full h-auto object-contain block"
-                         loading="lazy"
-                         onerror="console.error('Failed to load image: ${topic.filename}'); this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="hidden items-center justify-center h-64 text-gray-400 bg-gray-100">
-                        <div class="text-center">
-                            <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <p class="text-sm">Image not found</p>
-                        </div>
-                    </div>
+                         class="w-full h-auto object-contain"
+                         style="display: block; min-height: 400px;"
+                         onerror="console.error('Image failed to load: mindmaps/${topic.filename}'); this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'400\\' height=\\'300\\'%3E%3Crect fill=\\'%23f3f4f6\\' width=\\'400\\' height=\\'300\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dominant-baseline=\\'middle\\' fill=\\'%239ca3af\\' font-family=\\'Arial\\' font-size=\\'16\\'%3EImage not found%3C/text%3E%3C/svg%3E';">
                     <button onclick="downloadMindmap('${topic.mindmapId}', '${topic.filename}', '${topic.title}')" 
-                            class="absolute top-3 right-3 bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 shadow-lg hover:shadow-xl rounded-lg p-2.5 transition-all duration-200 flex items-center justify-center border border-gray-200 z-10"
+                            class="absolute top-4 right-4 bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 shadow-lg hover:shadow-xl rounded-lg p-3 transition-all duration-200 flex items-center justify-center border-2 border-gray-200 z-10"
                             title="Download ${topic.title}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
@@ -251,7 +243,7 @@ function loadTopicCards() {
                     </button>
                 </div>
             ` : `
-                <div class="mindmap-display bg-gray-50 h-64 flex items-center justify-center">
+                <div class="mindmap-display bg-gray-50 h-96 flex items-center justify-center">
                     <div class="text-center text-gray-400">
                         <svg class="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -280,7 +272,7 @@ function loadTopicCards() {
 
 // Download mind map
 function downloadMindmap(mindmapId, filename, title) {
-    const filepath = `./mindmaps/${filename}`;
+    const filepath = `mindmaps/${filename}`;
     
     // Create a temporary link element to trigger download
     const link = document.createElement('a');
