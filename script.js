@@ -227,6 +227,22 @@ function loadTopicCards() {
 
     topicCards.innerHTML = topics.map(topic => `
         <div class="mindmap-card bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 overflow-hidden">
+            <!-- Title Section (Above Image) -->
+            <div class="p-5 border-b border-gray-100">
+                <div class="flex items-start space-x-3 mb-2">
+                    <span class="text-2xl flex-shrink-0">${topic.icon}</span>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-gray-900 text-base leading-tight mb-1">${topic.title}</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">${topic.desc}</p>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mt-3">
+                    ${topic.tags.map(tag => `
+                        <span class="px-2.5 py-1 text-xs bg-gray-100 text-gray-600 rounded-full font-medium">${tag}</span>
+                    `).join('')}
+                </div>
+            </div>
+            <!-- Mind Map Image Section -->
             ${topic.filename ? `
                 <div class="mindmap-display relative bg-white group">
                     <img src="mindmaps/${topic.filename}" 
@@ -252,20 +268,6 @@ function loadTopicCards() {
                     </div>
                 </div>
             `}
-            <div class="p-5 border-t border-gray-100">
-                <div class="flex items-start space-x-3 mb-2">
-                    <span class="text-2xl flex-shrink-0">${topic.icon}</span>
-                    <div class="flex-1">
-                        <h4 class="font-semibold text-gray-900 text-base leading-tight mb-1">${topic.title}</h4>
-                        <p class="text-sm text-gray-600 leading-relaxed">${topic.desc}</p>
-                    </div>
-                </div>
-                <div class="flex flex-wrap gap-2 mt-3">
-                    ${topic.tags.map(tag => `
-                        <span class="px-2.5 py-1 text-xs bg-gray-100 text-gray-600 rounded-full font-medium">${tag}</span>
-                    `).join('')}
-                </div>
-            </div>
         </div>
     `).join('');
 }
