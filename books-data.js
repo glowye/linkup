@@ -207,6 +207,10 @@ async function fetchGoodreadsRating(goodreadsId) {
             ratingMatch = html.match(/class="average"[^>]*>([\d.]+)/i);
         }
         if (!ratingMatch) {
+            // Try pattern: "4.3" near "average" or "rating"
+            ratingMatch = html.match(/(?:average|rating)[^>]*>[\s]*([\d.]+)/i);
+        }
+        if (!ratingMatch) {
             // Try to find rating in JSON-LD structured data
             const jsonLdMatch = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>(.*?)<\/script>/is);
             if (jsonLdMatch) {
@@ -220,9 +224,21 @@ async function fetchGoodreadsRating(goodreadsId) {
                 }
             }
         }
+        if (!ratingMatch) {
+            // Try pattern: itemprop="ratingValue"
+            ratingMatch = html.match(/itemprop=["']ratingValue["'][^>]*>([\d.]+)/i);
+        }
+        if (!ratingMatch) {
+            // Try pattern: data-rating or rating data attribute
+            ratingMatch = html.match(/(?:data-rating|rating)=["']([\d.]+)["']/i);
+        }
         
-        if (ratingMatch) {
-            return parseFloat(ratingMatch[1]);
+        if (ratingMatch && ratingMatch[1]) {
+            const rating = parseFloat(ratingMatch[1]);
+            // Validate rating is in reasonable range (0-5)
+            if (rating >= 0 && rating <= 5) {
+                return rating;
+            }
         }
         
         return null;
@@ -326,34 +342,52 @@ async function loadBooks() {
         });
     });
     
-    // Wait for all ratings to be fetched, then sort and re-render
-    Promise.all(ratingPromises).then(() => {
+    // Function to sort and re-render books
+    function sortAndRenderBooks() {
         // Sort books by rating (highest first), books without ratings go to the end
         const sortedBooks = [...communicationBooks].sort((a, b) => {
-            const ratingA = a.rating || 0;
-            const ratingB = b.rating || 0;
+            const ratingA = a.rating;
+            const ratingB = b.rating;
+            
             // If both have ratings, sort by rating descending
-            if (ratingA > 0 && ratingB > 0) {
+            if (ratingA && ratingB) {
                 return ratingB - ratingA;
             }
             // If only one has rating, prioritize it
-            if (ratingA > 0) return -1;
-            if (ratingB > 0) return 1;
+            if (ratingA && !ratingB) return -1;
+            if (ratingB && !ratingA) return 1;
             // If neither has rating, maintain original order
             return 0;
         });
         
         // Re-render with sorted books
         renderBooks(sortedBooks);
-        
-        // Update rating displays for sorted books
-        sortedBooks.forEach(book => {
-            if (book.rating) {
+    }
+    
+    // Track how many ratings have been fetched
+    let fetchedCount = 0;
+    const totalBooks = communicationBooks.length;
+    
+    // Wait for all ratings to be fetched, then sort and re-render
+    ratingPromises.forEach((promise, index) => {
+        promise.then((rating) => {
+            fetchedCount++;
+            
+            // Update the rating display immediately
+            if (rating) {
+                const book = communicationBooks[index];
+                book.rating = rating;
+                
+                // Update display for this book
                 const ratingEl = document.querySelector(`.book-rating[data-book-id="${book.goodreadsId}"]`);
                 const starsEl = document.querySelector(`.book-stars[data-book-id="${book.goodreadsId}"]`);
-                if (ratingEl) ratingEl.textContent = book.rating.toFixed(1);
-                if (starsEl) starsEl.textContent = renderStars(book.rating);
+                if (ratingEl) ratingEl.textContent = rating.toFixed(1);
+                if (starsEl) starsEl.textContent = renderStars(rating);
             }
+            
+            // Re-sort and re-render after each rating is fetched
+            // This ensures books are sorted as ratings come in
+            sortAndRenderBooks();
         });
     });
 }
