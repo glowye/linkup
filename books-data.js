@@ -209,38 +209,30 @@ async function loadBooks() {
     if (!booksContainer) return;
     
     booksContainer.innerHTML = communicationBooks.map(book => {
-        // Try multiple cover sources with fallback
-        const coverSources = [];
-        if (book.isbn) {
-            coverSources.push(`https://covers.openlibrary.org/b/isbn/${book.isbn}-L.jpg`);
-        }
-        if (book.goodreadsId) {
-            // Goodreads cover image URL pattern
-            coverSources.push(`https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${book.goodreadsId.substring(0, 3)}/${book.goodreadsId.substring(3, 6)}/${book.goodreadsId}/l/${book.goodreadsId}.jpg`);
-            coverSources.push(`https://images-na.ssl-images-amazon.com/images/P/${book.goodreadsId}.01.L.jpg`);
-        }
-        const fallbackUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title.substring(0, 20))}`;
-        const primaryCoverUrl = coverSources[0] || fallbackUrl;
+        // Get cover URLs with fallback chain
+        const goodreadsCover = getBookCover(null, book.goodreadsId);
+        const openLibraryCover = getBookCover(book.isbn, null);
+        const primaryCover = goodreadsCover || openLibraryCover;
+        const secondaryCover = openLibraryCover || goodreadsCover;
+        const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title.substring(0, 15).replace(/\s+/g, '+'))}`;
         
         const ratingDisplay = book.rating ? book.rating.toFixed(1) : '...';
         const starsDisplay = book.rating ? renderStars(book.rating) : '⭐⭐⭐⭐⭐';
         
-        // Create fallback chain for images
-        const onErrorHandler = `this.onerror=null; ${coverSources.slice(1).map((url, idx) => 
-            idx === coverSources.length - 2 
-                ? `this.src='${url}'; this.onerror=function(){this.src='${fallbackUrl}'};`
-                : `this.src='${url}';`
-        ).join(' ')}`;
+        // Create fallback handler
+        const fallbackHandler = secondaryCover && secondaryCover !== primaryCover
+            ? `this.onerror=null; this.src='${secondaryCover}'; this.onerror=function(){this.src='${placeholderUrl}';};`
+            : `this.src='${placeholderUrl}';`;
         
         return `
             <a href="${book.goodreadsUrl}" target="_blank" 
                class="resource-card bg-white rounded-lg p-3 border border-gray-200 hover:shadow-xl transition-all transform hover:scale-105 hover:border-pink-300"
                data-book-id="${book.goodreadsId}">
                 <div class="mb-3">
-                    <img src="${primaryCoverUrl}" 
+                    <img src="${primaryCover || placeholderUrl}" 
                          alt="${book.title}" 
                          class="w-full h-48 object-cover rounded-lg shadow-md"
-                         onerror="${onErrorHandler || `this.src='${fallbackUrl}'`}">
+                         onerror="${fallbackHandler}">
                 </div>
                 <h4 class="font-semibold text-gray-800 mb-1 text-sm leading-tight">${book.title}</h4>
                 <p class="text-xs text-gray-500 mb-2 line-clamp-2">${book.description}</p>
