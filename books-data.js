@@ -9,7 +9,7 @@ const communicationBooks = [
         goodreadsUrl: "https://www.goodreads.com/book/show/215514806-the-next-conversation",
         goodreadsId: "215514806",
         description: "Argue less, talk more - practical communication strategies",
-        isbn: null, // Will try to fetch from Goodreads
+        isbn: "9780593716250", // ISBN-13 for The Next Conversation
         rating: null, // Will be fetched dynamically
         coverUrl: null // Will be fetched from Open Library or Goodreads
     },
@@ -232,5 +232,13 @@ async function loadBooks() {
             }
         }, index * 500); // 500ms delay between each request
     });
+}
+
+// Auto-load books when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadBooks);
+} else {
+    // DOM is already loaded
+    loadBooks();
 }
 
