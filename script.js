@@ -657,6 +657,50 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Load communication books
+async function loadBooks() {
+    const booksContainer = document.getElementById('books-container');
+    if (!booksContainer) return;
+    
+    booksContainer.innerHTML = communicationBooks.map(book => {
+        const coverUrl = getBookCover(book.isbn) || `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title)}`;
+        const ratingDisplay = book.rating ? book.rating.toFixed(1) : '...';
+        const starsDisplay = book.rating ? renderStars(book.rating) : '⭐⭐⭐⭐⭐';
+        
+        return `
+            <a href="${book.goodreadsUrl}" target="_blank" 
+               class="resource-card bg-white rounded-lg p-3 border border-gray-200 hover:shadow-xl transition-all transform hover:scale-105 hover:border-pink-300"
+               data-book-id="${book.goodreadsId}">
+                <div class="mb-3">
+                    <img src="${coverUrl}" 
+                         alt="${book.title}" 
+                         class="w-full h-48 object-cover rounded-lg shadow-md"
+                         onerror="this.src='https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title)}'">
+                </div>
+                <h4 class="font-semibold text-gray-800 mb-1 text-sm leading-tight">${book.title}</h4>
+                <p class="text-xs text-gray-500 mb-2 line-clamp-2">${book.description}</p>
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-yellow-600 book-stars" data-book-id="${book.goodreadsId}">${starsDisplay}</span>
+                    <span class="text-xs text-gray-400 book-rating" data-book-id="${book.goodreadsId}">${ratingDisplay}</span>
+                </div>
+            </a>
+        `;
+    }).join('');
+    
+    // Fetch ratings for all books
+    communicationBooks.forEach(async (book) => {
+        const rating = await fetchGoodreadsRating(book.goodreadsId);
+        if (rating) {
+            book.rating = rating;
+            // Update the display
+            const ratingEl = document.querySelector(`.book-rating[data-book-id="${book.goodreadsId}"]`);
+            const starsEl = document.querySelector(`.book-stars[data-book-id="${book.goodreadsId}"]`);
+            if (ratingEl) ratingEl.textContent = rating.toFixed(1);
+            if (starsEl) starsEl.textContent = renderStars(rating);
+        }
+    });
+}
+
 // Expose functions to global scope for onclick usage
 window.saveExecutionCheck = saveExecutionCheck;
 window.toggleSuggestion = toggleSuggestion;
