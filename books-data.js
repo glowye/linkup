@@ -131,16 +131,34 @@ async function fetchGoodreadsRating(goodreadsId) {
         const data = await response.json();
         const html = data.contents;
         
-        // Extract rating from HTML
-        const ratingMatch = html.match(/average rating["\s]*>([\d.]+)/i);
-        if (ratingMatch) {
-            return parseFloat(ratingMatch[1]);
+        // Extract rating from HTML - try multiple patterns
+        let ratingMatch = html.match(/average rating["\s]*>([\d.]+)/i);
+        if (!ratingMatch) {
+            ratingMatch = html.match(/ratingValue["\s]*>([\d.]+)/i);
+        }
+        if (!ratingMatch) {
+            ratingMatch = html.match(/avg rating[^>]*>([\d.]+)/i);
+        }
+        if (!ratingMatch) {
+            ratingMatch = html.match(/class="average"[^>]*>([\d.]+)/i);
+        }
+        if (!ratingMatch) {
+            // Try to find rating in JSON-LD structured data
+            const jsonLdMatch = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>(.*?)<\/script>/is);
+            if (jsonLdMatch) {
+                try {
+                    const jsonData = JSON.parse(jsonLdMatch[1]);
+                    if (jsonData.aggregateRating && jsonData.aggregateRating.ratingValue) {
+                        return parseFloat(jsonData.aggregateRating.ratingValue);
+                    }
+                } catch (e) {
+                    // JSON parse failed, continue
+                }
+            }
         }
         
-        // Alternative: Look for rating in different format
-        const ratingMatch2 = html.match(/ratingValue["\s]*>([\d.]+)/i);
-        if (ratingMatch2) {
-            return parseFloat(ratingMatch2[1]);
+        if (ratingMatch) {
+            return parseFloat(ratingMatch[1]);
         }
         
         return null;
