@@ -115,10 +115,26 @@ const communicationBooks = [
     }
 ];
 
-// Function to get book cover from Open Library
-function getBookCover(isbn) {
-    if (!isbn) return null;
-    return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+// Function to get book cover from multiple sources
+function getBookCover(isbn, goodreadsId) {
+    // Goodreads cover URL format: https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/{id1}/{id2}/{id3}/l/{id}.jpg
+    // Where id is split: first 3 digits, next 3 digits, remaining digits
+    if (goodreadsId) {
+        const id = goodreadsId.toString();
+        if (id.length >= 6) {
+            const id1 = id.substring(0, 3);
+            const id2 = id.substring(3, 6);
+            const id3 = id.substring(6);
+            return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
+        }
+    }
+    
+    // Fallback to Open Library
+    if (isbn) {
+        return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+    }
+    
+    return null;
 }
 
 // Function to fetch Goodreads rating (using a proxy or scraping)
@@ -193,19 +209,38 @@ async function loadBooks() {
     if (!booksContainer) return;
     
     booksContainer.innerHTML = communicationBooks.map(book => {
-        const coverUrl = getBookCover(book.isbn) || `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title)}`;
+        // Try multiple cover sources with fallback
+        const coverSources = [];
+        if (book.isbn) {
+            coverSources.push(`https://covers.openlibrary.org/b/isbn/${book.isbn}-L.jpg`);
+        }
+        if (book.goodreadsId) {
+            // Goodreads cover image URL pattern
+            coverSources.push(`https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${book.goodreadsId.substring(0, 3)}/${book.goodreadsId.substring(3, 6)}/${book.goodreadsId}/l/${book.goodreadsId}.jpg`);
+            coverSources.push(`https://images-na.ssl-images-amazon.com/images/P/${book.goodreadsId}.01.L.jpg`);
+        }
+        const fallbackUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title.substring(0, 20))}`;
+        const primaryCoverUrl = coverSources[0] || fallbackUrl;
+        
         const ratingDisplay = book.rating ? book.rating.toFixed(1) : '...';
         const starsDisplay = book.rating ? renderStars(book.rating) : '⭐⭐⭐⭐⭐';
+        
+        // Create fallback chain for images
+        const onErrorHandler = `this.onerror=null; ${coverSources.slice(1).map((url, idx) => 
+            idx === coverSources.length - 2 
+                ? `this.src='${url}'; this.onerror=function(){this.src='${fallbackUrl}'};`
+                : `this.src='${url}';`
+        ).join(' ')}`;
         
         return `
             <a href="${book.goodreadsUrl}" target="_blank" 
                class="resource-card bg-white rounded-lg p-3 border border-gray-200 hover:shadow-xl transition-all transform hover:scale-105 hover:border-pink-300"
                data-book-id="${book.goodreadsId}">
                 <div class="mb-3">
-                    <img src="${coverUrl}" 
+                    <img src="${primaryCoverUrl}" 
                          alt="${book.title}" 
                          class="w-full h-48 object-cover rounded-lg shadow-md"
-                         onerror="this.src='https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title)}'">
+                         onerror="${onErrorHandler || `this.src='${fallbackUrl}'`}">
                 </div>
                 <h4 class="font-semibold text-gray-800 mb-1 text-sm leading-tight">${book.title}</h4>
                 <p class="text-xs text-gray-500 mb-2 line-clamp-2">${book.description}</p>
