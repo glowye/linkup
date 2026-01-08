@@ -116,27 +116,37 @@ const communicationBooks = [
 ];
 
 // Function to get book cover from multiple sources
-function getBookCover(isbn, goodreadsId) {
-    // Goodreads cover URL format: https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/{id1}/{id2}/{id3}/l/{id}.jpg
-    // Where id is split: first 3 digits, next 3 digits, remaining digits
+function getBookCover(isbn, goodreadsId, title) {
+    // Special handling for books with known cover issues
+    const specialCovers = {
+        "215514806": "https://covers.openlibrary.org/b/isbn/9780593716250-L.jpg", // The Next Conversation
+        "50841095": "https://covers.openlibrary.org/b/isbn/9781734314500-L.jpg", // How to Become a People Magnet
+        "101021597": "https://covers.openlibrary.org/b/isbn/9781668005296-L.jpg", // Think Faster, Talk Smarter
+    };
+    
+    // Check if this book has a special cover URL
+    if (goodreadsId && specialCovers[goodreadsId]) {
+        return specialCovers[goodreadsId];
+    }
+    
+    // Try Open Library first (more reliable)
+    if (isbn) {
+        return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+    }
+    
+    // Fallback to Goodreads cover URL format
     if (goodreadsId) {
         const id = goodreadsId.toString();
         if (id.length >= 6) {
             const id1 = id.substring(0, 3);
             const id2 = id.substring(3, 6);
-            const id3 = id.substring(6) || '0'; // Handle cases where id3 might be empty
+            const id3 = id.substring(6) || '0';
             return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
         } else if (id.length >= 3) {
-            // For shorter IDs, use a simpler format
             const id1 = id.substring(0, 3);
             const id2 = id.substring(3) || '0';
             return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/l/${id}.jpg`;
         }
-    }
-    
-    // Fallback to Open Library
-    if (isbn) {
-        return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
     }
     
     return null;
@@ -214,19 +224,28 @@ async function loadBooks() {
     if (!booksContainer) return;
     
     booksContainer.innerHTML = communicationBooks.map(book => {
-        // Get cover URLs with fallback chain
-        const goodreadsCover = getBookCover(null, book.goodreadsId);
-        const openLibraryCover = getBookCover(book.isbn, null);
-        const primaryCover = goodreadsCover || openLibraryCover;
-        const secondaryCover = openLibraryCover || goodreadsCover;
+        // Get cover URL (prioritizes Open Library, with special handling for problematic books)
+        const primaryCover = getBookCover(book.isbn, book.goodreadsId, book.title);
         const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title.substring(0, 15).replace(/\s+/g, '+'))}`;
         
         const ratingDisplay = book.rating ? book.rating.toFixed(1) : '...';
         const starsDisplay = book.rating ? renderStars(book.rating) : '⭐⭐⭐⭐⭐';
         
-        // Create fallback handler
-        const fallbackHandler = secondaryCover && secondaryCover !== primaryCover
-            ? `this.onerror=null; this.src='${secondaryCover}'; this.onerror=function(){this.src='${placeholderUrl}';};`
+        // Create fallback handler - try Goodreads if Open Library fails
+        let fallbackUrl = null;
+        if (book.goodreadsId && primaryCover && primaryCover.includes('openlibrary.org')) {
+            // If primary is Open Library, try Goodreads as fallback
+            const id = book.goodreadsId.toString();
+            if (id.length >= 6) {
+                const id1 = id.substring(0, 3);
+                const id2 = id.substring(3, 6);
+                const id3 = id.substring(6) || '0';
+                fallbackUrl = `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
+            }
+        }
+        
+        const fallbackHandler = fallbackUrl
+            ? `this.onerror=null; this.src='${fallbackUrl}'; this.onerror=function(){this.src='${placeholderUrl}';};`
             : `this.src='${placeholderUrl}';`;
         
         return `
