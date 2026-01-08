@@ -272,13 +272,25 @@ function renderBooks(books) {
     const booksContainer = document.getElementById('books-container');
     if (!booksContainer) return;
     
+    // Store current ratings before re-rendering to preserve them
+    const currentRatings = {};
+    document.querySelectorAll('.book-rating').forEach(el => {
+        const bookId = el.getAttribute('data-book-id');
+        const ratingText = el.textContent;
+        if (ratingText && ratingText !== '...') {
+            currentRatings[bookId] = parseFloat(ratingText);
+        }
+    });
+    
     booksContainer.innerHTML = books.map(book => {
         // Get cover URL (prioritizes Open Library)
         const primaryCover = getBookCover(book.isbn, book.goodreadsId, book.title);
         const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title.substring(0, 15).replace(/\s+/g, '+'))}`;
         
-        const ratingDisplay = book.rating ? book.rating.toFixed(1) : '...';
-        const starsDisplay = book.rating ? renderStars(book.rating) : '⭐⭐⭐⭐⭐';
+        // Use current rating if available, otherwise use book.rating, otherwise show '...'
+        const currentRating = currentRatings[book.goodreadsId] || book.rating;
+        const ratingDisplay = currentRating ? currentRating.toFixed(1) : '...';
+        const starsDisplay = currentRating ? renderStars(currentRating) : '⭐⭐⭐⭐⭐';
         
         // Store book data for async cover fetching
         if (!book.coverUrl) {
@@ -373,12 +385,12 @@ async function loadBooks() {
         promise.then((rating) => {
             fetchedCount++;
             
-            // Update the rating display immediately
+            // Update the rating in the book object
             if (rating) {
                 const book = communicationBooks[index];
                 book.rating = rating;
                 
-                // Update display for this book
+                // Update display for this book immediately (before sorting)
                 const ratingEl = document.querySelector(`.book-rating[data-book-id="${book.goodreadsId}"]`);
                 const starsEl = document.querySelector(`.book-stars[data-book-id="${book.goodreadsId}"]`);
                 if (ratingEl) ratingEl.textContent = rating.toFixed(1);
