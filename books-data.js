@@ -251,12 +251,12 @@ function renderStars(rating) {
     return stars;
 }
 
-// Load communication books function
-async function loadBooks() {
+// Function to render books in the container
+function renderBooks(books) {
     const booksContainer = document.getElementById('books-container');
     if (!booksContainer) return;
     
-    booksContainer.innerHTML = communicationBooks.map(book => {
+    booksContainer.innerHTML = books.map(book => {
         // Get cover URL (prioritizes Open Library)
         const primaryCover = getBookCover(book.isbn, book.goodreadsId, book.title);
         const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title.substring(0, 15).replace(/\s+/g, '+'))}`;
@@ -290,31 +290,71 @@ async function loadBooks() {
             </a>
         `;
     }).join('');
+}
+
+// Load communication books function
+async function loadBooks() {
+    const booksContainer = document.getElementById('books-container');
+    if (!booksContainer) return;
+    
+    // Initial render (before ratings are fetched)
+    renderBooks(communicationBooks);
     
     // Fetch covers and ratings for all books (with delay to avoid rate limiting)
-    communicationBooks.forEach(async (book, index) => {
-        setTimeout(async () => {
-            // Fetch rating
-            const rating = await fetchGoodreadsRating(book.goodreadsId);
-            if (rating) {
-                book.rating = rating;
+    const ratingPromises = communicationBooks.map(async (book, index) => {
+        return new Promise((resolve) => {
+            setTimeout(async () => {
+                // Fetch rating
+                const rating = await fetchGoodreadsRating(book.goodreadsId);
+                if (rating) {
+                    book.rating = rating;
+                }
+                
+                // Fetch cover from Goodreads if Open Library failed (for problematic books)
+                const coverImg = document.querySelector(`.book-cover[data-book-id="${book.goodreadsId}"]`);
+                if (coverImg && coverImg.complete && coverImg.naturalHeight === 0) {
+                    // Image failed to load, try fetching from Goodreads
+                    const goodreadsCover = await fetchGoodreadsCover(book.goodreadsId);
+                    if (goodreadsCover) {
+                        book.coverUrl = goodreadsCover;
+                        coverImg.src = goodreadsCover;
+                    }
+                }
+                
+                resolve(rating);
+            }, index * 500); // 500ms delay between each request
+        });
+    });
+    
+    // Wait for all ratings to be fetched, then sort and re-render
+    Promise.all(ratingPromises).then(() => {
+        // Sort books by rating (highest first), books without ratings go to the end
+        const sortedBooks = [...communicationBooks].sort((a, b) => {
+            const ratingA = a.rating || 0;
+            const ratingB = b.rating || 0;
+            // If both have ratings, sort by rating descending
+            if (ratingA > 0 && ratingB > 0) {
+                return ratingB - ratingA;
+            }
+            // If only one has rating, prioritize it
+            if (ratingA > 0) return -1;
+            if (ratingB > 0) return 1;
+            // If neither has rating, maintain original order
+            return 0;
+        });
+        
+        // Re-render with sorted books
+        renderBooks(sortedBooks);
+        
+        // Update rating displays for sorted books
+        sortedBooks.forEach(book => {
+            if (book.rating) {
                 const ratingEl = document.querySelector(`.book-rating[data-book-id="${book.goodreadsId}"]`);
                 const starsEl = document.querySelector(`.book-stars[data-book-id="${book.goodreadsId}"]`);
-                if (ratingEl) ratingEl.textContent = rating.toFixed(1);
-                if (starsEl) starsEl.textContent = renderStars(rating);
+                if (ratingEl) ratingEl.textContent = book.rating.toFixed(1);
+                if (starsEl) starsEl.textContent = renderStars(book.rating);
             }
-            
-            // Fetch cover from Goodreads if Open Library failed (for problematic books)
-            const coverImg = document.querySelector(`.book-cover[data-book-id="${book.goodreadsId}"]`);
-            if (coverImg && coverImg.complete && coverImg.naturalHeight === 0) {
-                // Image failed to load, try fetching from Goodreads
-                const goodreadsCover = await fetchGoodreadsCover(book.goodreadsId);
-                if (goodreadsCover) {
-                    book.coverUrl = goodreadsCover;
-                    coverImg.src = goodreadsCover;
-                }
-            }
-        }, index * 500); // 500ms delay between each request
+        });
     });
 }
 
