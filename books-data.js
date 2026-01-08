@@ -9,7 +9,7 @@ const communicationBooks = [
         goodreadsUrl: "https://www.goodreads.com/book/show/215514806-the-next-conversation",
         goodreadsId: "215514806",
         description: "Argue less, talk more - practical communication strategies",
-        isbn: "9780593716250", // ISBN-13 for The Next Conversation
+        isbn: "9780593716250",
         rating: null, // Will be fetched dynamically
         coverUrl: null // Will be fetched from Open Library or Goodreads
     },
