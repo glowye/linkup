@@ -117,19 +117,7 @@ const communicationBooks = [
 
 // Function to get book cover from multiple sources
 function getBookCover(isbn, goodreadsId, title) {
-    // Special handling for books with known cover issues
-    const specialCovers = {
-        "215514806": "https://covers.openlibrary.org/b/isbn/9780593716250-L.jpg", // The Next Conversation
-        "50841095": "https://covers.openlibrary.org/b/isbn/9781734314500-L.jpg", // How to Become a People Magnet
-        "101021597": "https://covers.openlibrary.org/b/isbn/9781668005296-L.jpg", // Think Faster, Talk Smarter
-    };
-    
-    // Check if this book has a special cover URL
-    if (goodreadsId && specialCovers[goodreadsId]) {
-        return specialCovers[goodreadsId];
-    }
-    
-    // Try Open Library first (more reliable)
+    // Try Open Library first (more reliable for most books)
     if (isbn) {
         return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
     }
@@ -150,6 +138,51 @@ function getBookCover(isbn, goodreadsId, title) {
     }
     
     return null;
+}
+
+// Function to fetch book cover from Goodreads page (similar to rating fetch)
+async function fetchGoodreadsCover(goodreadsId) {
+    try {
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.goodreads.com/book/show/${goodreadsId}`)}`;
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        const html = data.contents;
+        
+        // Try multiple patterns to find cover image
+        // Pattern 1: Look for img tag with book cover
+        let coverMatch = html.match(/<img[^>]*id=["']coverImage["'][^>]*src=["']([^"']+)["']/i);
+        if (!coverMatch) {
+            // Pattern 2: Look for og:image meta tag
+            coverMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i);
+        }
+        if (!coverMatch) {
+            // Pattern 3: Look for bookCoverContainer img
+            coverMatch = html.match(/<img[^>]*class=["'][^"']*bookCover[^"']*["'][^>]*src=["']([^"']+)["']/i);
+        }
+        if (!coverMatch) {
+            // Pattern 4: Look for any img with "cover" in src
+            coverMatch = html.match(/<img[^>]*src=["']([^"']*cover[^"']*)["']/i);
+        }
+        
+        if (coverMatch && coverMatch[1]) {
+            let coverUrl = coverMatch[1];
+            // Remove size parameters to get larger image
+            coverUrl = coverUrl.replace(/[?&]s=\d+/gi, '');
+            coverUrl = coverUrl.replace(/[?&]w=\d+/gi, '');
+            coverUrl = coverUrl.replace(/[?&]h=\d+/gi, '');
+            // Ensure we get a good size
+            if (!coverUrl.includes('?') && !coverUrl.includes('_')) {
+                // Try to get large version
+                coverUrl = coverUrl.replace(/\._([^_]+)_\./, '.');
+            }
+            return coverUrl;
+        }
+        
+        return null;
+    } catch (error) {
+        console.error(`Error fetching cover for book ${goodreadsId}:`, error);
+        return null;
+    }
 }
 
 // Function to fetch Goodreads rating (using a proxy or scraping)
@@ -224,39 +257,29 @@ async function loadBooks() {
     if (!booksContainer) return;
     
     booksContainer.innerHTML = communicationBooks.map(book => {
-        // Get cover URL (prioritizes Open Library, with special handling for problematic books)
+        // Get cover URL (prioritizes Open Library)
         const primaryCover = getBookCover(book.isbn, book.goodreadsId, book.title);
         const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title.substring(0, 15).replace(/\s+/g, '+'))}`;
         
         const ratingDisplay = book.rating ? book.rating.toFixed(1) : '...';
         const starsDisplay = book.rating ? renderStars(book.rating) : '⭐⭐⭐⭐⭐';
         
-        // Create fallback handler - try Goodreads if Open Library fails
-        let fallbackUrl = null;
-        if (book.goodreadsId && primaryCover && primaryCover.includes('openlibrary.org')) {
-            // If primary is Open Library, try Goodreads as fallback
-            const id = book.goodreadsId.toString();
-            if (id.length >= 6) {
-                const id1 = id.substring(0, 3);
-                const id2 = id.substring(3, 6);
-                const id3 = id.substring(6) || '0';
-                fallbackUrl = `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
-            }
+        // Store book data for async cover fetching
+        if (!book.coverUrl) {
+            book.coverUrl = primaryCover;
         }
-        
-        const fallbackHandler = fallbackUrl
-            ? `this.onerror=null; this.src='${fallbackUrl}'; this.onerror=function(){this.src='${placeholderUrl}';};`
-            : `this.src='${placeholderUrl}';`;
         
         return `
             <a href="${book.goodreadsUrl}" target="_blank" 
                class="resource-card bg-white rounded-lg p-3 border border-gray-200 hover:shadow-xl transition-all transform hover:scale-105 hover:border-pink-300"
                data-book-id="${book.goodreadsId}">
                 <div class="mb-3">
-                    <img src="${primaryCover || placeholderUrl}" 
+                    <img src="${book.coverUrl || primaryCover || placeholderUrl}" 
                          alt="${book.title}" 
-                         class="w-full h-48 object-cover rounded-lg shadow-md"
-                         onerror="${fallbackHandler}">
+                         class="w-full h-48 object-cover rounded-lg shadow-md book-cover"
+                         data-book-id="${book.goodreadsId}"
+                         data-isbn="${book.isbn || ''}"
+                         onerror="handleCoverError(this, '${book.goodreadsId}', '${book.isbn || ''}')">
                 </div>
                 <h4 class="font-semibold text-gray-800 mb-1 text-sm leading-tight">${book.title}</h4>
                 <p class="text-xs text-gray-500 mb-2 line-clamp-2">${book.description}</p>
@@ -268,21 +291,73 @@ async function loadBooks() {
         `;
     }).join('');
     
-    // Fetch ratings for all books (with delay to avoid rate limiting)
+    // Fetch covers and ratings for all books (with delay to avoid rate limiting)
     communicationBooks.forEach(async (book, index) => {
-        // Stagger requests to avoid rate limiting
         setTimeout(async () => {
+            // Fetch rating
             const rating = await fetchGoodreadsRating(book.goodreadsId);
             if (rating) {
                 book.rating = rating;
-                // Update the display
                 const ratingEl = document.querySelector(`.book-rating[data-book-id="${book.goodreadsId}"]`);
                 const starsEl = document.querySelector(`.book-stars[data-book-id="${book.goodreadsId}"]`);
                 if (ratingEl) ratingEl.textContent = rating.toFixed(1);
                 if (starsEl) starsEl.textContent = renderStars(rating);
             }
+            
+            // Fetch cover from Goodreads if Open Library failed (for problematic books)
+            const coverImg = document.querySelector(`.book-cover[data-book-id="${book.goodreadsId}"]`);
+            if (coverImg && coverImg.complete && coverImg.naturalHeight === 0) {
+                // Image failed to load, try fetching from Goodreads
+                const goodreadsCover = await fetchGoodreadsCover(book.goodreadsId);
+                if (goodreadsCover) {
+                    book.coverUrl = goodreadsCover;
+                    coverImg.src = goodreadsCover;
+                }
+            }
         }, index * 500); // 500ms delay between each request
     });
+}
+
+// Global function to handle cover image errors
+async function handleCoverError(imgElement, goodreadsId, isbn) {
+    // Try Goodreads cover URL format first
+    if (goodreadsId) {
+        const id = goodreadsId.toString();
+        if (id.length >= 6) {
+            const id1 = id.substring(0, 3);
+            const id2 = id.substring(3, 6);
+            const id3 = id.substring(6) || '0';
+            const goodreadsUrl = `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
+            imgElement.onerror = null; // Reset error handler
+            imgElement.src = goodreadsUrl;
+            imgElement.onerror = function() {
+                // If Goodreads URL also fails, try fetching from page
+                fetchGoodreadsCover(goodreadsId).then(coverUrl => {
+                    if (coverUrl) {
+                        imgElement.src = coverUrl;
+                    } else {
+                        // Final fallback to placeholder
+                        const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=No+Cover`;
+                        imgElement.src = placeholderUrl;
+                    }
+                });
+            };
+            return;
+        }
+    }
+    
+    // If no goodreadsId, try fetching from Goodreads page
+    if (goodreadsId) {
+        const coverUrl = await fetchGoodreadsCover(goodreadsId);
+        if (coverUrl) {
+            imgElement.src = coverUrl;
+            return;
+        }
+    }
+    
+    // Final fallback
+    const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=No+Cover`;
+    imgElement.src = placeholderUrl;
 }
 
 // Auto-load books when DOM is ready
