@@ -124,8 +124,13 @@ function getBookCover(isbn, goodreadsId) {
         if (id.length >= 6) {
             const id1 = id.substring(0, 3);
             const id2 = id.substring(3, 6);
-            const id3 = id.substring(6);
+            const id3 = id.substring(6) || '0'; // Handle cases where id3 might be empty
             return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
+        } else if (id.length >= 3) {
+            // For shorter IDs, use a simpler format
+            const id1 = id.substring(0, 3);
+            const id2 = id.substring(3) || '0';
+            return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/l/${id}.jpg`;
         }
     }
     
