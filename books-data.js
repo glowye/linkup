@@ -2,8 +2,17 @@
 // This file contains book information with Goodreads links
 // Ratings will be fetched dynamically from your backend API (which scrapes Goodreads)
 
-
-// ↑ 改成你自己的 Vercel 后端域名（就是你测试成功返回 {"rating":3.67} 的那个域名）
+// Define API_BASE_URL if not already defined (in case this script loads before script.js)
+if (typeof API_BASE_URL === 'undefined') {
+    window.API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:8000'
+        : 'https://linkup-backend-oz1f.vercel.app';
+}
+// Use window.API_BASE_URL or the global API_BASE_URL
+const API_BASE_URL = window.API_BASE_URL || (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:8000'
+        : 'https://linkup-backend-oz1f.vercel.app'));
 
 const communicationBooks = [
   {
