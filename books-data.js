@@ -292,8 +292,14 @@ function sortBooksByRatingDesc(books) {
 // Load communication books function
 async function loadBooks() {
   const booksContainer = document.getElementById("books-container");
-  if (!booksContainer) return;
+  if (!booksContainer) {
+    // Retry after a short delay if container not found
+    console.warn("books-container not found, retrying...");
+    setTimeout(loadBooks, 100);
+    return;
+  }
 
+  console.log("Loading books into container...");
   // 初次渲染（此时 rating 还是 null）
   renderBooks(communicationBooks);
 
@@ -348,8 +354,31 @@ async function handleCoverError(imgElement, goodreadsId, isbn) {
 }
 
 // Auto-load books when DOM is ready
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", loadBooks);
-} else {
-  loadBooks();
+function initBooks() {
+  // Wait a bit to ensure all elements are rendered
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      setTimeout(loadBooks, 200);
+    });
+  } else {
+    // DOM already loaded, but wait a bit for dynamic content
+    setTimeout(loadBooks, 200);
+  }
+}
+
+// Initialize books loading
+initBooks();
+
+// Also try loading when page becomes visible (in case of dynamic page switching)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) {
+    setTimeout(loadBooks, 100);
+  }
+});
+
+// Also listen for any page changes (if using SPA-like navigation)
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', () => {
+    setTimeout(loadBooks, 300);
+  });
 }
