@@ -313,6 +313,13 @@ function showPage(page) {
     
     // Hide all pages first
     homePageEl.classList.add('hidden');
+    
+    // Load books when showing home page
+    if (page === 'home' && typeof loadBooks === 'function') {
+        setTimeout(() => {
+            loadBooks();
+        }, 100);
+    }
     galleryPageEl.classList.add('hidden');
     recordsPageEl.classList.add('hidden');
     
