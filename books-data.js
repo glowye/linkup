@@ -1,518 +1,344 @@
 // Communication Books Data
 // This file contains book information with Goodreads links
-// Ratings will be fetched dynamically from Goodreads
+// Ratings will be fetched dynamically from your backend API (which scrapes Goodreads)
+
+const API_BASE_URL = "https://linkup-backend-oz1f.vercel.app"; 
+// ↑ 改成你自己的 Vercel 后端域名（就是你测试成功返回 {"rating":3.67} 的那个域名）
 
 const communicationBooks = [
-    {
-        title: "The Next Conversation",
-        author: "Jefferson Fisher",
-        goodreadsUrl: "https://www.goodreads.com/book/show/215514806-the-next-conversation",
-        goodreadsId: "215514806",
-        description: "Argue less, talk more - practical communication strategies",
-        isbn: "9780593716250",
-        rating: null, // Will be fetched dynamically
-        coverUrl: null // Will be fetched from Open Library or Goodreads
-    },
-    {
-        title: "Crucial Conversations",
-        author: "Kerry Patterson, Joseph Grenny, Ron McMillan, Al Switzler",
-        goodreadsUrl: "https://www.goodreads.com/book/show/62927923-crucial-conversations",
-        goodreadsId: "62927923",
-        description: "Tools for talking when stakes are high",
-        isbn: "9780071771320",
-        rating: null,
-        coverUrl: null
-    },
-    {
-        title: "How to Talk to Anyone",
-        author: "Leil Lowndes",
-        goodreadsUrl: "https://www.goodreads.com/book/show/35210.How_to_Talk_to_Anyone",
-        goodreadsId: "35210",
-        description: "92 little tricks for big success in relationships",
-        isbn: "9780071418584",
-        rating: null,
-        coverUrl: null
-    },
-    {
-        title: "Talk Like TED",
-        author: "Carmine Gallo",
-        goodreadsUrl: "https://www.goodreads.com/book/show/17910144-talk-like-ted",
-        goodreadsId: "17910144",
-        description: "The 9 public-speaking secrets of the world's top minds",
-        isbn: "9781250061539",
-        rating: null,
-        coverUrl: null
-    },
-    {
-        title: "What Every Body is Saying",
-        author: "Joe Navarro",
-        goodreadsUrl: "https://www.goodreads.com/book/show/1173576.What_Every_Body_is_Saying",
-        goodreadsId: "1173576",
-        description: "An ex-FBI agent's guide to speed-reading people",
-        isbn: "9780061438295",
-        rating: null,
-        coverUrl: null
-    },
-    {
-        title: "The Art of Reading Minds",
-        author: "Henrik Fexeus",
-        goodreadsUrl: "https://www.goodreads.com/book/show/52279225-the-art-of-reading-minds",
-        goodreadsId: "52279225",
-        description: "How to understand and influence others without them noticing",
-        isbn: "9781250237231",
-        rating: null,
-        coverUrl: null
-    },
-    {
-        title: "Never Split the Difference",
-        author: "Chris Voss",
-        goodreadsUrl: "https://www.goodreads.com/book/show/32444582-never-split-the-difference",
-        goodreadsId: "32444582",
-        description: "Negotiating as if your life depended on it",
-        isbn: "9780062407801",
-        rating: null,
-        coverUrl: null
-    },
-    {
-        title: "How to Become a People Magnet",
-        author: "Marc Reklau",
-        goodreadsUrl: "https://www.goodreads.com/book/show/50841095-how-to-become-a-people-magnet",
-        goodreadsId: "50841095",
-        description: "62 simple strategies to build strong relationships",
-        isbn: "9781734314500",
-        rating: null,
-        coverUrl: null
-    },
-    {
-        title: "Think Faster, Talk Smarter",
-        author: "Matt Abrahams",
-        goodreadsUrl: "https://www.goodreads.com/book/show/101021597-think-faster-talk-smarter",
-        goodreadsId: "101021597",
-        description: "How to speak successfully when you're put on the spot",
-        isbn: "9781668005296",
-        rating: null,
-        coverUrl: null
-    },
-    {
-        title: "Difficult Conversations",
-        author: "Douglas Stone, Bruce Patton, Sheila Heen",
-        goodreadsUrl: "https://www.goodreads.com/book/show/774088.Difficult_Conversations",
-        goodreadsId: "774088",
-        description: "How to discuss what matters most",
-        isbn: "9780143118442",
-        rating: null,
-        coverUrl: null
-    },
-    {
-        title: "Getting to Yes",
-        author: "Roger Fisher, William Ury, Bruce Patton",
-        goodreadsUrl: "https://www.goodreads.com/book/show/313605.Getting_to_Yes",
-        goodreadsId: "313605",
-        description: "Negotiating agreement without giving in",
-        isbn: "9780143118756",
-        rating: null,
-        coverUrl: null
-    }
+  {
+    title: "The Next Conversation",
+    author: "Jefferson Fisher",
+    goodreadsUrl: "https://www.goodreads.com/book/show/215514806-the-next-conversation",
+    goodreadsId: "215514806",
+    description: "Argue less, talk more - practical communication strategies",
+    isbn: "9780593716250",
+    rating: null, // Will be fetched dynamically
+    coverUrl: null // Will be fetched from Open Library or Goodreads
+  },
+  {
+    title: "Crucial Conversations",
+    author: "Kerry Patterson, Joseph Grenny, Ron McMillan, Al Switzler",
+    goodreadsUrl: "https://www.goodreads.com/book/show/62927923-crucial-conversations",
+    goodreadsId: "62927923",
+    description: "Tools for talking when stakes are high",
+    isbn: "9780071771320",
+    rating: null,
+    coverUrl: null
+  },
+  {
+    title: "How to Talk to Anyone",
+    author: "Leil Lowndes",
+    goodreadsUrl: "https://www.goodreads.com/book/show/35210.How_to_Talk_to_Anyone",
+    goodreadsId: "35210",
+    description: "92 little tricks for big success in relationships",
+    isbn: "9780071418584",
+    rating: null,
+    coverUrl: null
+  },
+  {
+    title: "Talk Like TED",
+    author: "Carmine Gallo",
+    goodreadsUrl: "https://www.goodreads.com/book/show/17910144-talk-like-ted",
+    goodreadsId: "17910144",
+    description: "The 9 public-speaking secrets of the world's top minds",
+    isbn: "9781250061539",
+    rating: null,
+    coverUrl: null
+  },
+  {
+    title: "What Every Body is Saying",
+    author: "Joe Navarro",
+    goodreadsUrl: "https://www.goodreads.com/book/show/1173576.What_Every_Body_is_Saying",
+    goodreadsId: "1173576",
+    description: "An ex-FBI agent's guide to speed-reading people",
+    isbn: "9780061438295",
+    rating: null,
+    coverUrl: null
+  },
+  {
+    title: "The Art of Reading Minds",
+    author: "Henrik Fexeus",
+    goodreadsUrl: "https://www.goodreads.com/book/show/52279225-the-art-of-reading-minds",
+    goodreadsId: "52279225",
+    description: "How to understand and influence others without them noticing",
+    isbn: "9781250237231",
+    rating: null,
+    coverUrl: null
+  },
+  {
+    title: "Never Split the Difference",
+    author: "Chris Voss",
+    goodreadsUrl: "https://www.goodreads.com/book/show/32444582-never-split-the-difference",
+    goodreadsId: "32444582",
+    description: "Negotiating as if your life depended on it",
+    isbn: "9780062407801",
+    rating: null,
+    coverUrl: null
+  },
+  {
+    title: "How to Become a People Magnet",
+    author: "Marc Reklau",
+    goodreadsUrl: "https://www.goodreads.com/book/show/50841095-how-to-become-a-people-magnet",
+    goodreadsId: "50841095",
+    description: "62 simple strategies to build strong relationships",
+    isbn: "9781734314500",
+    rating: null,
+    coverUrl: null
+  },
+  {
+    title: "Think Faster, Talk Smarter",
+    author: "Matt Abrahams",
+    goodreadsUrl: "https://www.goodreads.com/book/show/101021597-think-faster-talk-smarter",
+    goodreadsId: "101021597",
+    description: "How to speak successfully when you're put on the spot",
+    isbn: "9781668005296",
+    rating: null,
+    coverUrl: null
+  },
+  {
+    title: "Difficult Conversations",
+    author: "Douglas Stone, Bruce Patton, Sheila Heen",
+    goodreadsUrl: "https://www.goodreads.com/book/show/774088.Difficult_Conversations",
+    goodreadsId: "774088",
+    description: "How to discuss what matters most",
+    isbn: "9780143118442",
+    rating: null,
+    coverUrl: null
+  },
+  {
+    title: "Getting to Yes",
+    author: "Roger Fisher, William Ury, Bruce Patton",
+    goodreadsUrl: "https://www.goodreads.com/book/show/313605.Getting_to_Yes",
+    goodreadsId: "313605",
+    description: "Negotiating agreement without giving in",
+    isbn: "9780143118756",
+    rating: null,
+    coverUrl: null
+  }
 ];
 
 // Function to get book cover from multiple sources
 function getBookCover(isbn, goodreadsId, title) {
-    // Try Open Library first (more reliable for most books)
-    if (isbn) {
-        return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+  if (isbn) {
+    return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+  }
+
+  if (goodreadsId) {
+    const id = goodreadsId.toString();
+    if (id.length >= 6) {
+      const id1 = id.substring(0, 3);
+      const id2 = id.substring(3, 6);
+      const id3 = id.substring(6) || "0";
+      return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
+    } else if (id.length >= 3) {
+      const id1 = id.substring(0, 3);
+      const id2 = id.substring(3) || "0";
+      return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/l/${id}.jpg`;
     }
-    
-    // Fallback to Goodreads cover URL format
-    if (goodreadsId) {
-        const id = goodreadsId.toString();
-        if (id.length >= 6) {
-            const id1 = id.substring(0, 3);
-            const id2 = id.substring(3, 6);
-            const id3 = id.substring(6) || '0';
-            return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
-        } else if (id.length >= 3) {
-            const id1 = id.substring(0, 3);
-            const id2 = id.substring(3) || '0';
-            return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/l/${id}.jpg`;
-        }
-    }
-    
-    return null;
+  }
+
+  return null;
 }
 
-// Function to fetch book cover from Goodreads page (similar to rating fetch)
+// (封面抓取仍保持原逻辑；核心诉求是评分+排序，所以不强制你改封面)
 async function fetchGoodreadsCover(goodreadsId) {
-    try {
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.goodreads.com/book/show/${goodreadsId}`)}`;
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
-        const html = data.contents;
-        
-        // Try multiple patterns to find cover image
-        // Pattern 1: Look for img tag with book cover
-        let coverMatch = html.match(/<img[^>]*id=["']coverImage["'][^>]*src=["']([^"']+)["']/i);
-        if (!coverMatch) {
-            // Pattern 2: Look for og:image meta tag
-            coverMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i);
-        }
-        if (!coverMatch) {
-            // Pattern 3: Look for bookCoverContainer img
-            coverMatch = html.match(/<img[^>]*class=["'][^"']*bookCover[^"']*["'][^>]*src=["']([^"']+)["']/i);
-        }
-        if (!coverMatch) {
-            // Pattern 4: Look for any img with "cover" in src
-            coverMatch = html.match(/<img[^>]*src=["']([^"']*cover[^"']*)["']/i);
-        }
-        
-        if (coverMatch && coverMatch[1]) {
-            let coverUrl = coverMatch[1];
-            // Remove size parameters to get larger image
-            coverUrl = coverUrl.replace(/[?&]s=\d+/gi, '');
-            coverUrl = coverUrl.replace(/[?&]w=\d+/gi, '');
-            coverUrl = coverUrl.replace(/[?&]h=\d+/gi, '');
-            // Ensure we get a good size
-            if (!coverUrl.includes('?') && !coverUrl.includes('_')) {
-                // Try to get large version
-                coverUrl = coverUrl.replace(/\._([^_]+)_\./, '.');
-            }
-            return coverUrl;
-        }
-        
-        return null;
-    } catch (error) {
-        console.error(`Error fetching cover for book ${goodreadsId}:`, error);
-        return null;
+  try {
+    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(
+      `https://www.goodreads.com/book/show/${goodreadsId}`
+    )}`;
+    const response = await fetch(proxyUrl);
+    const data = await response.json();
+    const html = data.contents;
+
+    let coverMatch = html.match(/<img[^>]*id=["']coverImage["'][^>]*src=["']([^"']+)["']/i);
+    if (!coverMatch) coverMatch = html.match(/<meta[^>]*property=["']og:image["'][^>]*content=["']([^"']+)["']/i);
+    if (!coverMatch) coverMatch = html.match(/<img[^>]*class=["'][^"']*bookCover[^"']*["'][^>]*src=["']([^"']+)["']/i);
+    if (!coverMatch) coverMatch = html.match(/<img[^>]*src=["']([^"']*cover[^"']*)["']/i);
+
+    if (coverMatch && coverMatch[1]) {
+      let coverUrl = coverMatch[1];
+      coverUrl = coverUrl.replace(/[?&]s=\d+/gi, "");
+      coverUrl = coverUrl.replace(/[?&]w=\d+/gi, "");
+      coverUrl = coverUrl.replace(/[?&]h=\d+/gi, "");
+      if (!coverUrl.includes("?") && !coverUrl.includes("_")) {
+        coverUrl = coverUrl.replace(/\._([^_]+)_\./, ".");
+      }
+      return coverUrl;
     }
+
+    return null;
+  } catch (error) {
+    console.error(`Error fetching cover for book ${goodreadsId}:`, error);
+    return null;
+  }
 }
 
-// Function to fetch Goodreads rating (using a proxy or scraping)
-// Note: Goodreads doesn't have a public API anymore, so we'll use a workaround
+/**
+ * ✅ 核心改动 1：
+ * 评分不再用 allorigins 去抓 Goodreads（容易被 CORS/反爬影响）
+ * 改为调用你自己的后端：/api/goodreads-rating?id=xxxx
+ */
 async function fetchGoodreadsRating(goodreadsId) {
-    try {
-        // Using a CORS proxy to fetch Goodreads page
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://www.goodreads.com/book/show/${goodreadsId}`)}`;
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
-        const html = data.contents;
-        
-        // Extract rating from HTML - try multiple patterns
-        let ratingMatch = null;
-        
-        // Pattern 1: Look for "average rating" followed by a number
-        ratingMatch = html.match(/average rating[^>]*>[\s]*([\d.]+)/i);
-        
-        // Pattern 2: Look for ratingValue in various formats
-        if (!ratingMatch) {
-            ratingMatch = html.match(/ratingValue[^>]*>[\s]*([\d.]+)/i);
-        }
-        
-        // Pattern 3: Look for "avg rating" or "avgRating"
-        if (!ratingMatch) {
-            ratingMatch = html.match(/avg[_\s]?rating[^>]*>[\s]*([\d.]+)/i);
-        }
-        
-        // Pattern 4: Look for class="average" or "AverageRating"
-        if (!ratingMatch) {
-            ratingMatch = html.match(/class=["'][^"']*average[^"']*["'][^>]*>[\s]*([\d.]+)/i);
-        }
-        
-        // Pattern 5: Look for itemprop="ratingValue"
-        if (!ratingMatch) {
-            ratingMatch = html.match(/itemprop=["']ratingValue["'][^>]*>[\s]*([\d.]+)/i);
-        }
-        
-        // Pattern 6: Look for data-rating attribute
-        if (!ratingMatch) {
-            ratingMatch = html.match(/data-rating=["']([\d.]+)["']/i);
-        }
-        
-        // Pattern 7: Look for rating in span or div with specific classes
-        if (!ratingMatch) {
-            ratingMatch = html.match(/<span[^>]*class=["'][^"']*rating[^"']*["'][^>]*>[\s]*([\d.]+)/i);
-        }
-        
-        // Pattern 8: Look for "rated" or "rating" followed by number
-        if (!ratingMatch) {
-            ratingMatch = html.match(/(?:rated|rating)[\s:]+([\d.]+)/i);
-        }
-        
-        // Pattern 9: Look for number between 0-5 that appears near "rating" keywords
-        if (!ratingMatch) {
-            const ratingContext = html.match(/(?:average|avg|overall)[\s]*rating[^>]*>[\s]*([\d.]+)/i);
-            if (ratingContext) {
-                ratingMatch = ratingContext;
-            }
-        }
-        
-        // Pattern 10: Try to find rating in JSON-LD structured data
-        if (!ratingMatch) {
-            const jsonLdMatches = html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>(.*?)<\/script>/gis);
-            for (const jsonLdMatch of jsonLdMatches) {
-                try {
-                    const jsonData = JSON.parse(jsonLdMatch[1]);
-                    if (jsonData.aggregateRating && jsonData.aggregateRating.ratingValue) {
-                        const rating = parseFloat(jsonData.aggregateRating.ratingValue);
-                        if (rating >= 0 && rating <= 5) {
-                            return rating;
-                        }
-                    }
-                    // Also try nested structures
-                    if (jsonData['@graph']) {
-                        for (const item of jsonData['@graph']) {
-                            if (item.aggregateRating && item.aggregateRating.ratingValue) {
-                                const rating = parseFloat(item.aggregateRating.ratingValue);
-                                if (rating >= 0 && rating <= 5) {
-                                    return rating;
-                                }
-                            }
-                        }
-                    }
-                } catch (e) {
-                    // JSON parse failed, continue
-                }
-            }
-        }
-        
-        // Pattern 11: Look for rating in meta tags
-        if (!ratingMatch) {
-            ratingMatch = html.match(/<meta[^>]*property=["'](?:og|book):rating[^"']*["'][^>]*content=["']([\d.]+)["']/i);
-        }
-        
-        // Pattern 12: Look for rating in a more general way - find numbers near "stars" or rating indicators
-        if (!ratingMatch) {
-            // Look for pattern like "4.3 out of 5" or "4.3/5"
-            ratingMatch = html.match(/([\d.]+)\s*(?:out of|/)\s*5/i);
-        }
-        
-        if (ratingMatch && ratingMatch[1]) {
-            const rating = parseFloat(ratingMatch[1]);
-            // Validate rating is in reasonable range (0-5)
-            if (rating >= 0 && rating <= 5 && !isNaN(rating)) {
-                console.log(`✅ Successfully fetched rating ${rating} for book ${goodreadsId}`);
-                return rating;
-            }
-        }
-        
-        console.warn(`⚠️ Could not extract rating for book ${goodreadsId}`);
-        return null;
-    } catch (error) {
-        console.error(`Error fetching rating for book ${goodreadsId}:`, error);
-        return null;
-    }
+  try {
+    const url = `${API_BASE_URL}/api/goodreads-rating?id=${encodeURIComponent(goodreadsId)}`;
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    const data = await response.json();
+
+    const rating = data?.rating;
+    return Number.isFinite(rating) ? rating : null;
+  } catch (error) {
+    console.error(`Error fetching rating for book ${goodreadsId}:`, error);
+    return null;
+  }
 }
 
 // Function to render stars based on rating
 function renderStars(rating) {
-    if (!rating) return '⭐⭐⭐⭐⭐';
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-    let stars = '';
-    for (let i = 0; i < fullStars; i++) {
-        stars += '⭐';
-    }
-    if (hasHalfStar) {
-        stars += '½';
-    }
-    const emptyStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < emptyStars; i++) {
-        stars += '☆';
-    }
-    return stars;
+  if (!Number.isFinite(rating)) return "⭐⭐⭐⭐⭐";
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+
+  let stars = "";
+  for (let i = 0; i < fullStars; i++) stars += "⭐";
+  if (hasHalfStar) stars += "½";
+
+  const emptyStars = 5 - Math.ceil(rating);
+  for (let i = 0; i < emptyStars; i++) stars += "☆";
+
+  return stars;
 }
 
 // Function to render books in the container
 function renderBooks(books) {
-    const booksContainer = document.getElementById('books-container');
-    if (!booksContainer) return;
-    
-    // Store current ratings before re-rendering to preserve them
-    const currentRatings = {};
-    document.querySelectorAll('.book-rating').forEach(el => {
-        const bookId = el.getAttribute('data-book-id');
-        const ratingText = el.textContent;
-        if (ratingText && ratingText !== '...') {
-            currentRatings[bookId] = parseFloat(ratingText);
-        }
-    });
-    
-    booksContainer.innerHTML = books.map(book => {
-        // Get cover URL (prioritizes Open Library)
-        const primaryCover = getBookCover(book.isbn, book.goodreadsId, book.title);
-        const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(book.title.substring(0, 15).replace(/\s+/g, '+'))}`;
-        
-        // Use current rating if available, otherwise use book.rating, otherwise show '...'
-        const currentRating = currentRatings[book.goodreadsId] || book.rating;
-        const ratingDisplay = currentRating ? currentRating.toFixed(1) : '...';
-        const starsDisplay = currentRating ? renderStars(currentRating) : '⭐⭐⭐⭐⭐';
-        
-        // Store book data for async cover fetching
-        if (!book.coverUrl) {
-            book.coverUrl = primaryCover;
-        }
-        
-        return `
-            <a href="${book.goodreadsUrl}" target="_blank" 
-               class="resource-card bg-white rounded-lg p-3 border border-gray-200 hover:shadow-xl transition-all transform hover:scale-105 hover:border-pink-300"
-               data-book-id="${book.goodreadsId}">
-                <div class="mb-3">
-                    <img src="${book.coverUrl || primaryCover || placeholderUrl}" 
-                         alt="${book.title}" 
-                         class="w-full h-48 object-cover rounded-lg shadow-md book-cover"
-                         data-book-id="${book.goodreadsId}"
-                         data-isbn="${book.isbn || ''}"
-                         onerror="handleCoverError(this, '${book.goodreadsId}', '${book.isbn || ''}')">
-                </div>
-                <h4 class="font-semibold text-gray-800 mb-1 text-sm leading-tight">${book.title}</h4>
-                <p class="text-xs text-gray-500 mb-2 line-clamp-2">${book.description}</p>
-                <div class="flex items-center justify-between">
-                    <span class="text-xs text-yellow-600 book-stars" data-book-id="${book.goodreadsId}">${starsDisplay}</span>
-                    <span class="text-xs text-gray-400 book-rating" data-book-id="${book.goodreadsId}">${ratingDisplay}</span>
-                </div>
-            </a>
-        `;
-    }).join('');
+  const booksContainer = document.getElementById("books-container");
+  if (!booksContainer) return;
+
+  const currentRatings = {};
+  document.querySelectorAll(".book-rating").forEach((el) => {
+    const bookId = el.getAttribute("data-book-id");
+    const ratingText = el.textContent;
+    if (ratingText && ratingText !== "...") {
+      const n = parseFloat(ratingText);
+      if (Number.isFinite(n)) currentRatings[bookId] = n;
+    }
+  });
+
+  booksContainer.innerHTML = books
+    .map((book) => {
+      const primaryCover = getBookCover(book.isbn, book.goodreadsId, book.title);
+      const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=${encodeURIComponent(
+        book.title.substring(0, 15).replace(/\s+/g, "+")
+      )}`;
+
+      const currentRating = Number.isFinite(currentRatings[book.goodreadsId])
+        ? currentRatings[book.goodreadsId]
+        : book.rating;
+
+      const ratingDisplay = Number.isFinite(currentRating) ? currentRating.toFixed(1) : "...";
+      const starsDisplay = Number.isFinite(currentRating) ? renderStars(currentRating) : "⭐⭐⭐⭐⭐";
+
+      if (!book.coverUrl) book.coverUrl = primaryCover;
+
+      return `
+        <a href="${book.goodreadsUrl}" target="_blank" 
+          class="resource-card bg-white rounded-lg p-3 border border-gray-200 hover:shadow-xl transition-all transform hover:scale-105 hover:border-pink-300"
+          data-book-id="${book.goodreadsId}">
+          <div class="mb-3">
+            <img src="${book.coverUrl || primaryCover || placeholderUrl}" 
+              alt="${book.title}" 
+              class="w-full h-48 object-cover rounded-lg shadow-md book-cover"
+              data-book-id="${book.goodreadsId}"
+              data-isbn="${book.isbn || ""}"
+              onerror="handleCoverError(this, '${book.goodreadsId}', '${book.isbn || ""}')">
+          </div>
+          <h4 class="font-semibold text-gray-800 mb-1 text-sm leading-tight">${book.title}</h4>
+          <p class="text-xs text-gray-500 mb-2 line-clamp-2">${book.description}</p>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-yellow-600 book-stars" data-book-id="${book.goodreadsId}">${starsDisplay}</span>
+            <span class="text-xs text-gray-400 book-rating" data-book-id="${book.goodreadsId}">${ratingDisplay}</span>
+          </div>
+        </a>
+      `;
+    })
+    .join("");
+}
+
+// ✅ 核心改动 2：排序逻辑使用 Number.isFinite，确保 rating = null 的排最后
+function sortBooksByRatingDesc(books) {
+  return [...books].sort((a, b) => {
+    const aHas = Number.isFinite(a.rating);
+    const bHas = Number.isFinite(b.rating);
+
+    if (aHas && bHas) return b.rating - a.rating; // 高 → 低
+    if (aHas && !bHas) return -1;
+    if (!aHas && bHas) return 1;
+    return 0;
+  });
 }
 
 // Load communication books function
 async function loadBooks() {
-    const booksContainer = document.getElementById('books-container');
-    if (!booksContainer) return;
-    
-    // Initial render (before ratings are fetched)
-    renderBooks(communicationBooks);
-    
-    // Fetch covers and ratings for all books (with delay to avoid rate limiting)
-    const ratingPromises = communicationBooks.map(async (book, index) => {
-        return new Promise((resolve) => {
-            setTimeout(async () => {
-                // Fetch rating
-                const rating = await fetchGoodreadsRating(book.goodreadsId);
-                if (rating) {
-                    book.rating = rating;
-                }
-                
-                // Fetch cover from Goodreads if Open Library failed (for problematic books)
-                const coverImg = document.querySelector(`.book-cover[data-book-id="${book.goodreadsId}"]`);
-                if (coverImg && coverImg.complete && coverImg.naturalHeight === 0) {
-                    // Image failed to load, try fetching from Goodreads
-                    const goodreadsCover = await fetchGoodreadsCover(book.goodreadsId);
-                    if (goodreadsCover) {
-                        book.coverUrl = goodreadsCover;
-                        coverImg.src = goodreadsCover;
-                    }
-                }
-                
-                resolve(rating);
-            }, index * 500); // 500ms delay between each request
-        });
-    });
-    
-    // Function to sort and re-render books
-    function sortAndRenderBooks() {
-        // Sort books by rating (highest first), books without ratings go to the end
-        const sortedBooks = [...communicationBooks].sort((a, b) => {
-            const ratingA = a.rating;
-            const ratingB = b.rating;
-            
-            // If both have ratings, sort by rating descending
-            if (ratingA && ratingB) {
-                return ratingB - ratingA;
-            }
-            // If only one has rating, prioritize it
-            if (ratingA && !ratingB) return -1;
-            if (ratingB && !ratingA) return 1;
-            // If neither has rating, maintain original order
-            return 0;
-        });
-        
-        // Re-render with sorted books
-        renderBooks(sortedBooks);
-    }
-    
-    // Track how many ratings have been fetched
-    let fetchedCount = 0;
-    const totalBooks = communicationBooks.length;
-    
-    // Wait for all ratings to be fetched, then sort and re-render
-    ratingPromises.forEach((promise, index) => {
-        promise.then((rating) => {
-            fetchedCount++;
-            
-            // Update the rating in the book object
-            const book = communicationBooks[index];
-            if (rating) {
-                book.rating = rating;
-                console.log(`📊 Rating for "${book.title}": ${rating}`);
-            } else {
-                console.warn(`❌ Failed to fetch rating for "${book.title}" (ID: ${book.goodreadsId})`);
-            }
-            
-            // Update display for this book immediately (before sorting)
-            const ratingEl = document.querySelector(`.book-rating[data-book-id="${book.goodreadsId}"]`);
-            const starsEl = document.querySelector(`.book-stars[data-book-id="${book.goodreadsId}"]`);
-            if (ratingEl && rating) {
-                ratingEl.textContent = rating.toFixed(1);
-            }
-            if (starsEl && rating) {
-                starsEl.textContent = renderStars(rating);
-            }
-            
-            // Re-sort and re-render after each rating is fetched
-            // This ensures books are sorted as ratings come in
-            sortAndRenderBooks();
-        }).catch((error) => {
-            console.error(`Error processing rating for book ${communicationBooks[index].goodreadsId}:`, error);
-        });
-    });
+  const booksContainer = document.getElementById("books-container");
+  if (!booksContainer) return;
+
+  // 初次渲染（此时 rating 还是 null）
+  renderBooks(communicationBooks);
+
+  // 逐本抓取评分（错峰避免触发限制）
+  communicationBooks.forEach((book, index) => {
+    setTimeout(async () => {
+      const rating = await fetchGoodreadsRating(book.goodreadsId);
+      if (Number.isFinite(rating)) {
+        book.rating = rating;
+
+        // 每拿到一本的 rating，就重新排序+渲染（用户立刻看到变化）
+        const sorted = sortBooksByRatingDesc(communicationBooks);
+        renderBooks(sorted);
+      } else {
+        // 失败就不改，保持 null 排最后
+        const sorted = sortBooksByRatingDesc(communicationBooks);
+        renderBooks(sorted);
+      }
+    }, index * 250); // 250ms 间隔（比你原来的 500 更快一些，也不容易炸）
+  });
 }
 
 // Global function to handle cover image errors
 async function handleCoverError(imgElement, goodreadsId, isbn) {
-    // Try Goodreads cover URL format first
-    if (goodreadsId) {
-        const id = goodreadsId.toString();
-        if (id.length >= 6) {
-            const id1 = id.substring(0, 3);
-            const id2 = id.substring(3, 6);
-            const id3 = id.substring(6) || '0';
-            const goodreadsUrl = `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
-            imgElement.onerror = null; // Reset error handler
-            imgElement.src = goodreadsUrl;
-            imgElement.onerror = function() {
-                // If Goodreads URL also fails, try fetching from page
-                fetchGoodreadsCover(goodreadsId).then(coverUrl => {
-                    if (coverUrl) {
-                        imgElement.src = coverUrl;
-                    } else {
-                        // Final fallback to placeholder
-                        const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=No+Cover`;
-                        imgElement.src = placeholderUrl;
-                    }
-                });
-            };
-            return;
-        }
+  if (goodreadsId) {
+    const id = goodreadsId.toString();
+    if (id.length >= 6) {
+      const id1 = id.substring(0, 3);
+      const id2 = id.substring(3, 6);
+      const id3 = id.substring(6) || "0";
+      const goodreadsUrl = `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
+      imgElement.onerror = null;
+      imgElement.src = goodreadsUrl;
+      imgElement.onerror = function () {
+        fetchGoodreadsCover(goodreadsId).then((coverUrl) => {
+          imgElement.src = coverUrl || `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=No+Cover`;
+        });
+      };
+      return;
     }
-    
-    // If no goodreadsId, try fetching from Goodreads page
-    if (goodreadsId) {
-        const coverUrl = await fetchGoodreadsCover(goodreadsId);
-        if (coverUrl) {
-            imgElement.src = coverUrl;
-            return;
-        }
+  }
+
+  if (goodreadsId) {
+    const coverUrl = await fetchGoodreadsCover(goodreadsId);
+    if (coverUrl) {
+      imgElement.src = coverUrl;
+      return;
     }
-    
-    // Final fallback
-    const placeholderUrl = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=No+Cover`;
-    imgElement.src = placeholderUrl;
+  }
+
+  imgElement.src = `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=No+Cover`;
 }
 
 // Auto-load books when DOM is ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadBooks);
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadBooks);
 } else {
-    // DOM is already loaded
-    loadBooks();
+  loadBooks();
 }
-
