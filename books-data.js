@@ -196,51 +196,104 @@ async function fetchGoodreadsRating(goodreadsId) {
         const html = data.contents;
         
         // Extract rating from HTML - try multiple patterns
-        let ratingMatch = html.match(/average rating["\s]*>([\d.]+)/i);
+        let ratingMatch = null;
+        
+        // Pattern 1: Look for "average rating" followed by a number
+        ratingMatch = html.match(/average rating[^>]*>[\s]*([\d.]+)/i);
+        
+        // Pattern 2: Look for ratingValue in various formats
         if (!ratingMatch) {
-            ratingMatch = html.match(/ratingValue["\s]*>([\d.]+)/i);
+            ratingMatch = html.match(/ratingValue[^>]*>[\s]*([\d.]+)/i);
         }
+        
+        // Pattern 3: Look for "avg rating" or "avgRating"
         if (!ratingMatch) {
-            ratingMatch = html.match(/avg rating[^>]*>([\d.]+)/i);
+            ratingMatch = html.match(/avg[_\s]?rating[^>]*>[\s]*([\d.]+)/i);
         }
+        
+        // Pattern 4: Look for class="average" or "AverageRating"
         if (!ratingMatch) {
-            ratingMatch = html.match(/class="average"[^>]*>([\d.]+)/i);
+            ratingMatch = html.match(/class=["'][^"']*average[^"']*["'][^>]*>[\s]*([\d.]+)/i);
         }
+        
+        // Pattern 5: Look for itemprop="ratingValue"
         if (!ratingMatch) {
-            // Try pattern: "4.3" near "average" or "rating"
-            ratingMatch = html.match(/(?:average|rating)[^>]*>[\s]*([\d.]+)/i);
+            ratingMatch = html.match(/itemprop=["']ratingValue["'][^>]*>[\s]*([\d.]+)/i);
         }
+        
+        // Pattern 6: Look for data-rating attribute
         if (!ratingMatch) {
-            // Try to find rating in JSON-LD structured data
-            const jsonLdMatch = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>(.*?)<\/script>/is);
-            if (jsonLdMatch) {
+            ratingMatch = html.match(/data-rating=["']([\d.]+)["']/i);
+        }
+        
+        // Pattern 7: Look for rating in span or div with specific classes
+        if (!ratingMatch) {
+            ratingMatch = html.match(/<span[^>]*class=["'][^"']*rating[^"']*["'][^>]*>[\s]*([\d.]+)/i);
+        }
+        
+        // Pattern 8: Look for "rated" or "rating" followed by number
+        if (!ratingMatch) {
+            ratingMatch = html.match(/(?:rated|rating)[\s:]+([\d.]+)/i);
+        }
+        
+        // Pattern 9: Look for number between 0-5 that appears near "rating" keywords
+        if (!ratingMatch) {
+            const ratingContext = html.match(/(?:average|avg|overall)[\s]*rating[^>]*>[\s]*([\d.]+)/i);
+            if (ratingContext) {
+                ratingMatch = ratingContext;
+            }
+        }
+        
+        // Pattern 10: Try to find rating in JSON-LD structured data
+        if (!ratingMatch) {
+            const jsonLdMatches = html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>(.*?)<\/script>/gis);
+            for (const jsonLdMatch of jsonLdMatches) {
                 try {
                     const jsonData = JSON.parse(jsonLdMatch[1]);
                     if (jsonData.aggregateRating && jsonData.aggregateRating.ratingValue) {
-                        return parseFloat(jsonData.aggregateRating.ratingValue);
+                        const rating = parseFloat(jsonData.aggregateRating.ratingValue);
+                        if (rating >= 0 && rating <= 5) {
+                            return rating;
+                        }
+                    }
+                    // Also try nested structures
+                    if (jsonData['@graph']) {
+                        for (const item of jsonData['@graph']) {
+                            if (item.aggregateRating && item.aggregateRating.ratingValue) {
+                                const rating = parseFloat(item.aggregateRating.ratingValue);
+                                if (rating >= 0 && rating <= 5) {
+                                    return rating;
+                                }
+                            }
+                        }
                     }
                 } catch (e) {
                     // JSON parse failed, continue
                 }
             }
         }
+        
+        // Pattern 11: Look for rating in meta tags
         if (!ratingMatch) {
-            // Try pattern: itemprop="ratingValue"
-            ratingMatch = html.match(/itemprop=["']ratingValue["'][^>]*>([\d.]+)/i);
+            ratingMatch = html.match(/<meta[^>]*property=["'](?:og|book):rating[^"']*["'][^>]*content=["']([\d.]+)["']/i);
         }
+        
+        // Pattern 12: Look for rating in a more general way - find numbers near "stars" or rating indicators
         if (!ratingMatch) {
-            // Try pattern: data-rating or rating data attribute
-            ratingMatch = html.match(/(?:data-rating|rating)=["']([\d.]+)["']/i);
+            // Look for pattern like "4.3 out of 5" or "4.3/5"
+            ratingMatch = html.match(/([\d.]+)\s*(?:out of|/)\s*5/i);
         }
         
         if (ratingMatch && ratingMatch[1]) {
             const rating = parseFloat(ratingMatch[1]);
             // Validate rating is in reasonable range (0-5)
-            if (rating >= 0 && rating <= 5) {
+            if (rating >= 0 && rating <= 5 && !isNaN(rating)) {
+                console.log(`✅ Successfully fetched rating ${rating} for book ${goodreadsId}`);
                 return rating;
             }
         }
         
+        console.warn(`⚠️ Could not extract rating for book ${goodreadsId}`);
         return null;
     } catch (error) {
         console.error(`Error fetching rating for book ${goodreadsId}:`, error);
@@ -386,20 +439,29 @@ async function loadBooks() {
             fetchedCount++;
             
             // Update the rating in the book object
+            const book = communicationBooks[index];
             if (rating) {
-                const book = communicationBooks[index];
                 book.rating = rating;
-                
-                // Update display for this book immediately (before sorting)
-                const ratingEl = document.querySelector(`.book-rating[data-book-id="${book.goodreadsId}"]`);
-                const starsEl = document.querySelector(`.book-stars[data-book-id="${book.goodreadsId}"]`);
-                if (ratingEl) ratingEl.textContent = rating.toFixed(1);
-                if (starsEl) starsEl.textContent = renderStars(rating);
+                console.log(`📊 Rating for "${book.title}": ${rating}`);
+            } else {
+                console.warn(`❌ Failed to fetch rating for "${book.title}" (ID: ${book.goodreadsId})`);
+            }
+            
+            // Update display for this book immediately (before sorting)
+            const ratingEl = document.querySelector(`.book-rating[data-book-id="${book.goodreadsId}"]`);
+            const starsEl = document.querySelector(`.book-stars[data-book-id="${book.goodreadsId}"]`);
+            if (ratingEl && rating) {
+                ratingEl.textContent = rating.toFixed(1);
+            }
+            if (starsEl && rating) {
+                starsEl.textContent = renderStars(rating);
             }
             
             // Re-sort and re-render after each rating is fetched
             // This ensures books are sorted as ratings come in
             sortAndRenderBooks();
+        }).catch((error) => {
+            console.error(`Error processing rating for book ${communicationBooks[index].goodreadsId}:`, error);
         });
     });
 }
