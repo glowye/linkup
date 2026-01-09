@@ -2,7 +2,7 @@
 // This file contains book information with Goodreads links
 // Ratings will be fetched dynamically from your backend API (which scrapes Goodreads)
 
-const API_BASE_URL = "https://linkup-backend-oz1f.vercel.app"; 
+
 // ↑ 改成你自己的 Vercel 后端域名（就是你测试成功返回 {"rating":3.67} 的那个域名）
 
 const communicationBooks = [
@@ -181,6 +181,7 @@ async function fetchGoodreadsCover(goodreadsId) {
  */
 async function fetchGoodreadsRating(goodreadsId) {
   try {
+    // 复用 script.js 里定义的 API_BASE_URL
     const url = `${API_BASE_URL}/api/goodreads-rating?id=${encodeURIComponent(goodreadsId)}`;
     const response = await fetch(url);
     if (!response.ok) return null;
@@ -193,6 +194,7 @@ async function fetchGoodreadsRating(goodreadsId) {
     return null;
   }
 }
+
 
 // Function to render stars based on rating
 function renderStars(rating) {
