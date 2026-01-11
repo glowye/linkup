@@ -27,40 +27,73 @@ let currentPage = 'home';
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded');
+    
     // Ensure auth modal is hidden on load
     const authSection = document.getElementById('auth-section');
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     
-    authSection.classList.add('hidden');
-    loginForm.classList.add('hidden');
-    registerForm.classList.add('hidden');
+    if (authSection) {
+        authSection.classList.add('hidden');
+    }
+    if (loginForm) {
+        loginForm.classList.add('hidden');
+    }
+    if (registerForm) {
+        registerForm.classList.add('hidden');
+    }
     
     // Show home page by default for all users
     showPage('home');
+    
+    // Re-check button elements after DOM is loaded
+    const loginBtn = document.getElementById('show-login');
+    const registerBtn = document.getElementById('show-register');
+    
+    console.log('Button elements:', {
+        showLoginBtn: !!showLoginBtn,
+        showRegisterBtn: !!showRegisterBtn,
+        loginBtn: !!loginBtn,
+        registerBtn: !!registerBtn
+    });
     
     if (authToken) {
         checkAuth();
     } else {
         // Show navigation but keep auth buttons visible
-        navLinks.classList.remove('hidden');
-        showLoginBtn.classList.remove('hidden');
-        showRegisterBtn.classList.remove('hidden');
-        userWelcome.classList.add('hidden');
-        logoutBtn.classList.add('hidden');
+        if (navLinks) navLinks.classList.remove('hidden');
+        if (showLoginBtn) showLoginBtn.classList.remove('hidden');
+        if (showRegisterBtn) showRegisterBtn.classList.remove('hidden');
+        if (userWelcome) userWelcome.classList.add('hidden');
+        if (logoutBtn) logoutBtn.classList.add('hidden');
     }
-    setupEventListeners();
+    
+    // Setup event listeners with a small delay to ensure all elements are ready
+    setTimeout(() => {
+        setupEventListeners();
+    }, 100);
 });
 
 // Setup event listeners
 function setupEventListeners() {
+    console.log('Setting up event listeners...');
+    
+    // Re-fetch button elements in case they weren't available at script load time
+    const loginBtn = document.getElementById('show-login');
+    const registerBtn = document.getElementById('show-register');
+    
     // Check if elements exist (but don't return early, continue binding other events)
-    if (!showLoginBtn) {
+    if (!showLoginBtn && !loginBtn) {
         console.error('show-login button not found');
     }
-    if (!showRegisterBtn) {
+    if (!showRegisterBtn && !registerBtn) {
         console.error('show-register button not found');
     }
+    
+    // Use the re-fetched elements if original ones are null
+    const actualLoginBtn = showLoginBtn || loginBtn;
+    const actualRegisterBtn = showRegisterBtn || registerBtn;
     
     // Navigation buttons
     if (navHome) {
@@ -89,8 +122,9 @@ function setupEventListeners() {
     }
 
     // Show login form
-    if (showLoginBtn) {
-        showLoginBtn.addEventListener('click', (e) => {
+    if (actualLoginBtn) {
+        console.log('Binding login button event listener');
+        actualLoginBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         console.log('Login button clicked');
@@ -134,8 +168,9 @@ function setupEventListeners() {
     }
 
     // Show register form
-    if (showRegisterBtn) {
-        showRegisterBtn.addEventListener('click', (e) => {
+    if (actualRegisterBtn) {
+        console.log('Binding register button event listener');
+        actualRegisterBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         console.log('Register button clicked');
