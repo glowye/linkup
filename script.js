@@ -54,14 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Setup event listeners
 function setupEventListeners() {
-    // Check if elements exist
+    // Check if elements exist (but don't return early, continue binding other events)
     if (!showLoginBtn) {
         console.error('show-login button not found');
-        return;
     }
     if (!showRegisterBtn) {
         console.error('show-register button not found');
-        return;
     }
     
     // Navigation buttons
@@ -91,7 +89,8 @@ function setupEventListeners() {
     }
 
     // Show login form
-    showLoginBtn.addEventListener('click', (e) => {
+    if (showLoginBtn) {
+        showLoginBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         console.log('Login button clicked');
@@ -131,10 +130,12 @@ function setupEventListeners() {
         }
         loginFormEl.classList.remove('hidden');
         console.log('Login form shown');
-    });
+        });
+    }
 
     // Show register form
-    showRegisterBtn.addEventListener('click', (e) => {
+    if (showRegisterBtn) {
+        showRegisterBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         console.log('Register button clicked');
@@ -154,14 +155,17 @@ function setupEventListeners() {
         // Show register form, hide login form
         loginFormEl.classList.add('hidden');
         registerFormEl.classList.remove('hidden');
-    });
+        });
+    }
     
     // Close auth modal when clicking outside
-    authSection.addEventListener('click', (e) => {
-        if (e.target === authSection) {
-            hideAuthModal();
-        }
-    });
+    if (authSection) {
+        authSection.addEventListener('click', (e) => {
+            if (e.target === authSection) {
+                hideAuthModal();
+            }
+        });
+    }
 
     // Login form submit
     const loginFormElement = document.getElementById('login-form-element');
@@ -208,16 +212,21 @@ function setupEventListeners() {
     }
 
     // Logout
-    logoutBtn.addEventListener('click', () => {
-        logout();
-    });
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            logout();
+        });
+    }
 
     // Submit issue form
-    document.getElementById('issue-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const question = document.getElementById('issue-question').value;
-        await submitIssue(question);
-    });
+    const issueForm = document.getElementById('issue-form');
+    if (issueForm) {
+        issueForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const question = document.getElementById('issue-question').value;
+            await submitIssue(question);
+        });
+    }
 
     // Scenario buttons
     document.querySelectorAll('.scenario-btn').forEach(btn => {
