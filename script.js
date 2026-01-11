@@ -5,8 +5,12 @@ if (typeof window.API_BASE_URL === 'undefined') {
         ? 'http://localhost:8000'
         : 'https://linkup-backend-oz1f.vercel.app';
 }
-// Reference the global API_BASE_URL
-const API_BASE_URL = window.API_BASE_URL;
+// Reference the global API_BASE_URL - use window.API_BASE_URL directly to avoid const conflicts
+// Create a getter function for consistency
+function getApiBaseUrl() {
+    return window.API_BASE_URL;
+}
+const API_BASE_URL = getApiBaseUrl();
 
 // Store token
 let authToken = localStorage.getItem('authToken');

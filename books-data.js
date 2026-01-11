@@ -10,9 +10,13 @@ if (typeof window.API_BASE_URL === 'undefined') {
         : 'https://linkup-backend-oz1f.vercel.app';
 }
 
-// Use window.API_BASE_URL (don't declare const, just reference it)
-// This will be available globally after script.js also sets it
-const API_BASE_URL = window.API_BASE_URL;
+// Use window.API_BASE_URL directly (no const declaration to avoid conflicts)
+// Access it via window.API_BASE_URL or create a local reference function
+function getApiBaseUrl() {
+    return window.API_BASE_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:8000'
+        : 'https://linkup-backend-oz1f.vercel.app');
+}
 
 const communicationBooks = [
   {
@@ -190,8 +194,9 @@ async function fetchGoodreadsCover(goodreadsId) {
  */
 async function fetchGoodreadsRating(goodreadsId) {
   try {
-    // 复用 script.js 里定义的 API_BASE_URL
-    const url = `${API_BASE_URL}/api/goodreads-rating?id=${encodeURIComponent(goodreadsId)}`;
+    // 使用全局 API_BASE_URL
+    const apiUrl = getApiBaseUrl();
+    const url = `${apiUrl}/api/goodreads-rating?id=${encodeURIComponent(goodreadsId)}`;
     const response = await fetch(url);
     if (!response.ok) return null;
     const data = await response.json();
