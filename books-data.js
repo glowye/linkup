@@ -2,17 +2,17 @@
 // This file contains book information with Goodreads links
 // Ratings will be fetched dynamically from your backend API (which scrapes Goodreads)
 
-// Define API_BASE_URL if not already defined (in case this script loads before script.js)
-if (typeof API_BASE_URL === 'undefined') {
+// Define API_BASE_URL on window object if not already defined
+// This will be used by script.js and this file
+if (typeof window.API_BASE_URL === 'undefined') {
     window.API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://localhost:8000'
         : 'https://linkup-backend-oz1f.vercel.app';
 }
-// Use window.API_BASE_URL or the global API_BASE_URL
-const API_BASE_URL = window.API_BASE_URL || (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : 
-    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-        ? 'http://localhost:8000'
-        : 'https://linkup-backend-oz1f.vercel.app'));
+
+// Use window.API_BASE_URL (don't declare const, just reference it)
+// This will be available globally after script.js also sets it
+const API_BASE_URL = window.API_BASE_URL;
 
 const communicationBooks = [
   {
