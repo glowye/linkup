@@ -95,22 +95,42 @@ function setupEventListeners() {
         e.preventDefault();
         e.stopPropagation();
         console.log('Login button clicked');
+        
         const authSectionEl = document.getElementById('auth-section');
         const loginFormEl = document.getElementById('login-form');
         const registerFormEl = document.getElementById('register-form');
         
-        if (!authSectionEl || !loginFormEl || !registerFormEl) {
-            console.error('Auth modal elements not found');
+        console.log('Auth elements:', {
+            authSection: !!authSectionEl,
+            loginForm: !!loginFormEl,
+            registerForm: !!registerFormEl
+        });
+        
+        if (!authSectionEl) {
+            console.error('auth-section element not found');
+            showMessage('Error: Login modal not found', 'error');
             return;
+        }
+        if (!loginFormEl) {
+            console.error('login-form element not found');
+            showMessage('Error: Login form not found', 'error');
+            return;
+        }
+        if (!registerFormEl) {
+            console.error('register-form element not found');
         }
         
         // Show modal
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
+        console.log('Auth modal shown');
         
         // Show login form, hide register form
-        registerFormEl.classList.add('hidden');
+        if (registerFormEl) {
+            registerFormEl.classList.add('hidden');
+        }
         loginFormEl.classList.remove('hidden');
+        console.log('Login form shown');
     });
 
     // Show register form
