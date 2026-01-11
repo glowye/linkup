@@ -54,32 +54,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Setup event listeners
 function setupEventListeners() {
+    // Check if elements exist
+    if (!showLoginBtn) {
+        console.error('show-login button not found');
+        return;
+    }
+    if (!showRegisterBtn) {
+        console.error('show-register button not found');
+        return;
+    }
+    
     // Navigation buttons
-    navHome.addEventListener('click', () => {
-        showPage('home');
-    });
+    if (navHome) {
+        navHome.addEventListener('click', () => {
+            showPage('home');
+        });
+    }
     
-    navGallery.addEventListener('click', () => {
-        showPage('gallery');
-    });
+    if (navGallery) {
+        navGallery.addEventListener('click', () => {
+            showPage('gallery');
+        });
+    }
     
-    navRecords.addEventListener('click', () => {
-        // Check if user is logged in
-        if (!authToken) {
-            showMessage('Please login or register to view your works', 'error');
-            // Show login modal
-            showAuthModal();
-            return;
-        }
-        showPage('records');
-    });
+    if (navRecords) {
+        navRecords.addEventListener('click', () => {
+            // Check if user is logged in
+            if (!authToken) {
+                showMessage('Please login or register to view your works', 'error');
+                // Show login modal
+                showAuthModal();
+                return;
+            }
+            showPage('records');
+        });
+    }
 
     // Show login form
     showLoginBtn.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation();
+        console.log('Login button clicked');
         const authSectionEl = document.getElementById('auth-section');
         const loginFormEl = document.getElementById('login-form');
         const registerFormEl = document.getElementById('register-form');
+        
+        if (!authSectionEl || !loginFormEl || !registerFormEl) {
+            console.error('Auth modal elements not found');
+            return;
+        }
         
         // Show modal
         authSectionEl.classList.remove('hidden');
@@ -93,9 +116,16 @@ function setupEventListeners() {
     // Show register form
     showRegisterBtn.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation();
+        console.log('Register button clicked');
         const authSectionEl = document.getElementById('auth-section');
         const loginFormEl = document.getElementById('login-form');
         const registerFormEl = document.getElementById('register-form');
+        
+        if (!authSectionEl || !loginFormEl || !registerFormEl) {
+            console.error('Auth modal elements not found');
+            return;
+        }
         
         // Show modal
         authSectionEl.classList.remove('hidden');
