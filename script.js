@@ -144,21 +144,31 @@ function setupEventListeners() {
     });
 
     // Login form submit
-    document.getElementById('login-form-element').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
-        await login(username, password);
-    });
+    const loginFormElement = document.getElementById('login-form-element');
+    if (loginFormElement) {
+        loginFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            await login(username, password);
+        });
+    } else {
+        console.error('login-form-element not found');
+    }
 
     // Register form submit
-    document.getElementById('register-form-element').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('register-username').value;
-        const email = document.getElementById('register-email').value;
-        const password = document.getElementById('register-password').value;
-        await register(username, email, password);
-    });
+    const registerFormElement = document.getElementById('register-form-element');
+    if (registerFormElement) {
+        registerFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            await register(username, email, password);
+        });
+    } else {
+        console.error('register-form-element not found');
+    }
 
     // Logout
     logoutBtn.addEventListener('click', () => {
