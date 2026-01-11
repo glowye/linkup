@@ -148,8 +148,25 @@ function setupEventListeners() {
     if (loginFormElement) {
         loginFormElement.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
+            console.log('Login form submitted');
+            const usernameEl = document.getElementById('login-username');
+            const passwordEl = document.getElementById('login-password');
+            
+            if (!usernameEl || !passwordEl) {
+                console.error('Login form inputs not found');
+                showMessage('Login form error: inputs not found', 'error');
+                return;
+            }
+            
+            const username = usernameEl.value.trim();
+            const password = passwordEl.value;
+            
+            if (!username || !password) {
+                showMessage('Please enter both username and password', 'error');
+                return;
+            }
+            
+            console.log('Attempting login for user:', username);
             await login(username, password);
         });
     } else {
@@ -489,11 +506,17 @@ async function register(username, email, password) {
 // Login
 async function login(username, password) {
     try {
+        console.log('Login function called with username:', username);
+        console.log('API_BASE_URL:', API_BASE_URL);
+        
         const formData = new URLSearchParams();
         formData.append('username', username);
         formData.append('password', password);
 
-        const response = await fetch(`${API_BASE_URL}/token`, {
+        const url = `${API_BASE_URL}/token`;
+        console.log('Making login request to:', url);
+        
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -501,18 +524,41 @@ async function login(username, password) {
             body: formData,
         });
 
-        const data = await response.json();
+        console.log('Login response status:', response.status);
+        
+        let data;
+        try {
+            data = await response.json();
+            console.log('Login response data:', data);
+        } catch (jsonError) {
+            console.error('Failed to parse JSON response:', jsonError);
+            const text = await response.text();
+            console.error('Response text:', text);
+            throw new Error('Invalid response from server');
+        }
+        
         if (!response.ok) {
-            throw new Error(data.detail || 'Login failed');
+            const errorMsg = data.detail || data.message || 'Login failed';
+            console.error('Login failed:', errorMsg);
+            throw new Error(errorMsg);
+        }
+
+        if (!data.access_token) {
+            console.error('No access_token in response:', data);
+            throw new Error('No access token received');
         }
 
         authToken = data.access_token;
         localStorage.setItem('authToken', authToken);
+        console.log('Login successful, token saved');
+        
         hideAuthModal();
         await checkAuth();
         showMessage('Login successful', 'success');
     } catch (error) {
-        showMessage(error.message, 'error');
+        console.error('Login error:', error);
+        const errorMessage = error.message || 'Login failed. Please check your credentials.';
+        showMessage(errorMessage, 'error');
     }
 }
 
