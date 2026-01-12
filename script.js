@@ -700,23 +700,16 @@ async function loadRecords() {
             const executionCheckId = `exec-check-${issue.id}`;
             const executionCheckValue = issue.execution_check || '';
             
+            // Create what happened input (use sources field or what_happened if available)
+            const whatHappenedId = `what-happened-${issue.id}`;
+            // Check if there's a what_happened field, otherwise use sources as text or empty
+            const whatHappenedValue = issue.what_happened || (Array.isArray(issue.sources) && issue.sources.length > 0 ? issue.sources.join('\n') : '');
+            
             // Format suggestion with line breaks
             const suggestion = issue.suggestion || 'No suggestion';
             const formattedSuggestion = formatSuggestion(suggestion);
             const suggestionId = `suggestion-${issue.id}`;
             const isLong = suggestion.length > 200; // Consider long if more than 200 chars
-            
-            // Format sources
-            const sources = issue.sources || [];
-            const sourcesHtml = sources.length > 0 
-                ? `<div class="space-y-1">
-                    ${sources.map(source => `
-                        <div class="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                            📚 ${escapeHtml(source)}
-                        </div>
-                    `).join('')}
-                   </div>`
-                : '<span class="text-xs text-gray-400">No sources</span>';
             
             row.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${date}</td>
@@ -728,7 +721,18 @@ async function loadRecords() {
                     ${isLong ? `<button onclick="toggleSuggestion(${issue.id})" class="mt-2 text-blue-500 hover:text-blue-700 text-xs underline cursor-pointer" id="toggle-${issue.id}">Show more</button>` : ''}
                 </td>
                 <td class="px-6 py-4 text-sm max-w-xs">
-                    ${sourcesHtml}
+                    <div class="flex items-center space-x-2">
+                        <textarea 
+                            id="${whatHappenedId}" 
+                            rows="2" 
+                            class="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Record what happened...">${escapeHtml(whatHappenedValue)}</textarea>
+                        <button 
+                            onclick="saveWhatHappened(${issue.id}, '${whatHappenedId}')"
+                            class="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 whitespace-nowrap">
+                            Save
+                        </button>
+                    </div>
                 </td>
                 <td class="px-6 py-4 text-sm">
                     <div class="flex items-center space-x-2">
@@ -812,6 +816,32 @@ async function saveExecutionCheck(issueId, textareaId) {
     }
 }
 
+// Save what happened
+async function saveWhatHappened(issueId, textareaId) {
+    try {
+        const textarea = document.getElementById(textareaId);
+        const whatHappened = textarea.value;
+        
+        // Try to save to what_happened field, fallback to sources if endpoint doesn't exist
+        try {
+            await apiRequest(`/issues/${issueId}/what-happened`, {
+                method: 'PUT',
+                body: JSON.stringify({ what_happened: whatHappened }),
+            });
+        } catch (e) {
+            // If what-happened endpoint doesn't exist, try using sources field
+            await apiRequest(`/issues/${issueId}/sources`, {
+                method: 'PUT',
+                body: JSON.stringify({ sources: whatHappened ? [whatHappened] : [] }),
+            });
+        }
+        
+        showMessage('Saved successfully', 'success');
+    } catch (error) {
+        showMessage('Save failed: ' + error.message, 'error');
+    }
+}
+
 // HTML escape function
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -821,6 +851,7 @@ function escapeHtml(text) {
 
 // Expose functions to global scope for onclick usage
 window.saveExecutionCheck = saveExecutionCheck;
+window.saveWhatHappened = saveWhatHappened;
 window.toggleSuggestion = toggleSuggestion;
 window.useTopic = useTopic;
 window.hideAuthModal = hideAuthModal;
