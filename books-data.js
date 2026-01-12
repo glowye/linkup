@@ -355,7 +355,8 @@ async function handleCoverError(imgElement, goodreadsId, isbn) {
   const specialCovers = {
     "215514806": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730753595i/215514806.jpg",
     "50841095": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1561188423l/50841095.jpg",
-    "101021597": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1686093094i/101021597.jpg"
+    "101021597": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1686093094i/101021597.jpg",
+    "59227927": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1649650354i/59227927.jpg"
   };
   
   if (goodreadsId && specialCovers[goodreadsId]) {
