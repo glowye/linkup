@@ -343,7 +343,7 @@ async function handleCoverError(imgElement, goodreadsId, isbn) {
   // Special handling for books with known cover issues
   const specialCovers = {
     "215514806": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730753595i/215514806.jpg",
-    "50841095": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1572532010l/50841095._SY475_.jpg",
+    "50841095": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1561188423l/50841095.jpg",
     "101021597": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1689004560l/101021597._SY475_.jpg"
   };
   
