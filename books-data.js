@@ -133,6 +133,17 @@ const communicationBooks = [
 
 // Function to get book cover from multiple sources
 function getBookCover(isbn, goodreadsId, title) {
+  // Special handling for books with known cover issues
+  const specialCovers = {
+    "215514806": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1701961234l/215514806._SY475_.jpg", // The Next Conversation
+    "50841095": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1572532010l/50841095._SY475_.jpg", // How to Become a People Magnet
+    "101021597": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1689004560l/101021597._SY475_.jpg" // Think Faster, Talk Smarter
+  };
+  
+  if (goodreadsId && specialCovers[goodreadsId]) {
+    return specialCovers[goodreadsId];
+  }
+  
   if (isbn) {
     return `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
   }
@@ -143,11 +154,11 @@ function getBookCover(isbn, goodreadsId, title) {
       const id1 = id.substring(0, 3);
       const id2 = id.substring(3, 6);
       const id3 = id.substring(6) || "0";
-      return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
+      return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}._SY475_.jpg`;
     } else if (id.length >= 3) {
       const id1 = id.substring(0, 3);
       const id2 = id.substring(3) || "0";
-      return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/l/${id}.jpg`;
+      return `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/l/${id}._SY475_.jpg`;
     }
   }
 
@@ -329,19 +340,39 @@ async function loadBooks() {
 
 // Global function to handle cover image errors
 async function handleCoverError(imgElement, goodreadsId, isbn) {
+  // Special handling for books with known cover issues
+  const specialCovers = {
+    "215514806": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1701961234l/215514806._SY475_.jpg",
+    "50841095": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1572532010l/50841095._SY475_.jpg",
+    "101021597": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1689004560l/101021597._SY475_.jpg"
+  };
+  
+  if (goodreadsId && specialCovers[goodreadsId]) {
+    imgElement.onerror = null; // Remove error handler to prevent infinite loop
+    imgElement.src = specialCovers[goodreadsId];
+    return;
+  }
+  
   if (goodreadsId) {
     const id = goodreadsId.toString();
     if (id.length >= 6) {
       const id1 = id.substring(0, 3);
       const id2 = id.substring(3, 6);
       const id3 = id.substring(6) || "0";
-      const goodreadsUrl = `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
+      // Try with _SY475_ suffix first (standard Goodreads format)
+      const goodreadsUrl1 = `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}._SY475_.jpg`;
       imgElement.onerror = null;
-      imgElement.src = goodreadsUrl;
-      imgElement.onerror = function () {
-        fetchGoodreadsCover(goodreadsId).then((coverUrl) => {
+      imgElement.src = goodreadsUrl1;
+      imgElement.onerror = function() {
+        // Try without _SY475_ suffix
+        const goodreadsUrl2 = `https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/${id1}/${id2}/${id3}/l/${id}.jpg`;
+        imgElement.onerror = null;
+        imgElement.src = goodreadsUrl2;
+        imgElement.onerror = async function() {
+          // Last resort: fetch from Goodreads page
+          const coverUrl = await fetchGoodreadsCover(goodreadsId);
           imgElement.src = coverUrl || `https://via.placeholder.com/200x300/6366F1/FFFFFF?text=No+Cover`;
-        });
+        };
       };
       return;
     }
