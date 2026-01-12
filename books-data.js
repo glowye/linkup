@@ -137,7 +137,7 @@ function getBookCover(isbn, goodreadsId, title) {
   const specialCovers = {
     "215514806": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730753595i/215514806.jpg", // The Next Conversation
     "50841095": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1561188423l/50841095.jpg", // How to Become a People Magnet
-    "101021597": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1689004560l/101021597._SY475_.jpg" // Think Faster, Talk Smarter
+    "101021597": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1686093094i/101021597.jpg" // Think Faster, Talk Smarter
   };
   
   if (goodreadsId && specialCovers[goodreadsId]) {
@@ -344,7 +344,7 @@ async function handleCoverError(imgElement, goodreadsId, isbn) {
   const specialCovers = {
     "215514806": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1730753595i/215514806.jpg",
     "50841095": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1561188423l/50841095.jpg",
-    "101021597": "https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1689004560l/101021597._SY475_.jpg"
+    "101021597": "https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1686093094i/101021597.jpg"
   };
   
   if (goodreadsId && specialCovers[goodreadsId]) {
