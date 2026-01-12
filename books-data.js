@@ -128,6 +128,16 @@ const communicationBooks = [
     isbn: "9780143118756",
     rating: null,
     coverUrl: null
+  },
+  {
+    title: "Inner Mastery, Outer Impact",
+    author: "Hitendra Wadhwa",
+    goodreadsUrl: "https://www.goodreads.com/book/show/59227927-inner-mastery-outer-impact",
+    goodreadsId: "59227927",
+    description: "How your five core energies hold the key to success",
+    isbn: "9780593421019",
+    rating: null,
+    coverUrl: null
   }
 ];
 
