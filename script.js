@@ -689,7 +689,12 @@ async function loadRecords() {
 
         issues.forEach(issue => {
             const row = document.createElement('tr');
-            const date = new Date(issue.created_at).toLocaleString('en-US');
+            // Format date without time (only date)
+            const date = new Date(issue.created_at).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'numeric', 
+                day: 'numeric' 
+            });
             
             // Create execution check input
             const executionCheckId = `exec-check-${issue.id}`;
@@ -731,7 +736,7 @@ async function loadRecords() {
                             id="${executionCheckId}" 
                             rows="2" 
                             class="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Record execution status...">${escapeHtml(executionCheckValue)}</textarea>
+                            placeholder="Record your next steps...">${escapeHtml(executionCheckValue)}</textarea>
                         <button 
                             onclick="saveExecutionCheck(${issue.id}, '${executionCheckId}')"
                             class="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 whitespace-nowrap">
