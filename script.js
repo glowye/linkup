@@ -528,7 +528,12 @@ async function apiRequest(url, options = {}) {
         });
 
         if (response.status === 401) {
-            logout();
+            // Only logout if token is actually expired/invalid
+            // Don't logout immediately, let the calling function handle it
+            const errorData = await response.json().catch(() => ({}));
+            if (errorData.detail && errorData.detail.includes('expired')) {
+                logout();
+            }
             throw new Error('Unauthorized, please login again');
         }
 
@@ -640,7 +645,13 @@ async function checkAuth() {
         showRegisterBtn.classList.add('hidden');
         showPage('home');
     } catch (error) {
-        logout();
+        // Only logout if it's a 401 error (unauthorized), not other errors
+        if (error.message && error.message.includes('Unauthorized')) {
+            logout();
+        } else {
+            console.error('Auth check failed:', error);
+            // Don't logout on network errors, keep user logged in
+        }
     }
 }
 
