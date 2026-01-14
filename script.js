@@ -135,6 +135,7 @@ function setupEventListeners() {
         const authSectionEl = document.getElementById('auth-section');
         const loginFormEl = document.getElementById('login-form');
         const registerFormEl = document.getElementById('register-form');
+        const forgotPasswordFormEl = document.getElementById('forgot-password-form');
         
         console.log('Auth elements:', {
             authSection: !!authSectionEl,
@@ -156,14 +157,23 @@ function setupEventListeners() {
             console.error('register-form element not found');
         }
         
+        // Ensure home page is visible (not hidden) when showing modal
+        const homePageEl = document.getElementById('home-page');
+        if (homePageEl && homePageEl.classList.contains('hidden')) {
+            homePageEl.classList.remove('hidden');
+        }
+        
         // Show modal
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
         console.log('Auth modal shown');
         
-        // Show login form, hide register form
+        // Show login form, hide register and forgot password forms
         if (registerFormEl) {
             registerFormEl.classList.add('hidden');
+        }
+        if (forgotPasswordFormEl) {
+            forgotPasswordFormEl.classList.add('hidden');
         }
         loginFormEl.classList.remove('hidden');
         console.log('Login form shown');
@@ -178,18 +188,28 @@ function setupEventListeners() {
         const authSectionEl = document.getElementById('auth-section');
         const loginFormEl = document.getElementById('login-form');
         const registerFormEl = document.getElementById('register-form');
+        const forgotPasswordFormEl = document.getElementById('forgot-password-form');
         
         if (!authSectionEl || !loginFormEl || !registerFormEl) {
             console.error('Auth modal elements not found');
             return;
         }
         
+        // Ensure home page is visible (not hidden) when showing modal
+        const homePageEl = document.getElementById('home-page');
+        if (homePageEl && homePageEl.classList.contains('hidden')) {
+            homePageEl.classList.remove('hidden');
+        }
+        
         // Show modal
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
         
-        // Show register form, hide login form
+        // Show register form, hide login and forgot password forms
         loginFormEl.classList.add('hidden');
+        if (forgotPasswordFormEl) {
+            forgotPasswordFormEl.classList.add('hidden');
+        }
         registerFormEl.classList.remove('hidden');
     });
     
@@ -499,6 +519,12 @@ function showAuthModal() {
     const loginFormEl = document.getElementById('login-form');
     const registerFormEl = document.getElementById('register-form');
     const forgotPasswordFormEl = document.getElementById('forgot-password-form');
+    
+    // Ensure home page is visible (not hidden) when showing modal
+    const homePageEl = document.getElementById('home-page');
+    if (homePageEl && homePageEl.classList.contains('hidden')) {
+        homePageEl.classList.remove('hidden');
+    }
     
     // Show modal
     authSectionEl.classList.remove('hidden');
