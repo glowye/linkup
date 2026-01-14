@@ -204,12 +204,20 @@ function setupEventListeners() {
         }
         
         // Ensure home page is visible (not hidden) when showing modal
+        // The modal should overlay on top of the content, not hide it
         const homePageEl = document.getElementById('home-page');
-        if (homePageEl && homePageEl.classList.contains('hidden')) {
+        const galleryPageEl = document.getElementById('gallery-page');
+        const recordsPageEl = document.getElementById('records-page');
+        
+        // Make sure at least one page is visible (the current active page)
+        if (homePageEl && homePageEl.classList.contains('hidden') && 
+            galleryPageEl && galleryPageEl.classList.contains('hidden') &&
+            recordsPageEl && recordsPageEl.classList.contains('hidden')) {
+            // If all pages are hidden, show home page
             homePageEl.classList.remove('hidden');
         }
         
-        // Show modal
+        // Show modal (this will overlay on top of the content)
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
         
