@@ -237,13 +237,36 @@ function setupEventListeners() {
     if (registerFormElement) {
         registerFormElement.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const username = document.getElementById('register-username').value;
-            const email = document.getElementById('register-email').value;
+            const username = document.getElementById('register-username').value.trim();
+            const email = document.getElementById('register-email').value.trim();
             const password = document.getElementById('register-password').value;
+            const passwordConfirm = document.getElementById('register-password-confirm').value;
+            
+            // Validate required fields
+            if (!username || !email || !password || !passwordConfirm) {
+                showMessage('All fields are required', 'error');
+                return;
+            }
+            
+            // Validate password match
+            if (password !== passwordConfirm) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+            
             await register(username, email, password);
         });
     } else {
         console.error('register-form-element not found');
+    }
+    
+    // Forgot password form submit
+    const forgotPasswordFormElement = document.getElementById('forgot-password-form-element');
+    if (forgotPasswordFormElement) {
+        forgotPasswordFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await handleForgotPasswordSubmit();
+        });
     }
 
     // Logout
@@ -490,11 +513,164 @@ function hideAuthModal() {
     const authSectionEl = document.getElementById('auth-section');
     const loginFormEl = document.getElementById('login-form');
     const registerFormEl = document.getElementById('register-form');
+    const forgotPasswordFormEl = document.getElementById('forgot-password-form');
     
     authSectionEl.classList.add('hidden');
     authSectionEl.style.display = 'none';
     loginFormEl.classList.add('hidden');
     registerFormEl.classList.add('hidden');
+    if (forgotPasswordFormEl) {
+        forgotPasswordFormEl.classList.add('hidden');
+    }
+}
+
+// Show login from register
+function showLoginFromRegister() {
+    const loginFormEl = document.getElementById('login-form');
+    const registerFormEl = document.getElementById('register-form');
+    const forgotPasswordFormEl = document.getElementById('forgot-password-form');
+    
+    registerFormEl.classList.add('hidden');
+    if (forgotPasswordFormEl) {
+        forgotPasswordFormEl.classList.add('hidden');
+    }
+    loginFormEl.classList.remove('hidden');
+}
+
+// Show login from forgot password
+function showLoginFromForgot() {
+    const loginFormEl = document.getElementById('login-form');
+    const forgotPasswordFormEl = document.getElementById('forgot-password-form');
+    
+    if (forgotPasswordFormEl) {
+        forgotPasswordFormEl.classList.add('hidden');
+        // Reset forgot password form
+        document.getElementById('forgot-email').value = '';
+        document.getElementById('forgot-verification-code').value = '';
+        document.getElementById('forgot-new-password').value = '';
+        document.getElementById('forgot-confirm-password').value = '';
+        document.getElementById('verification-code-section').classList.add('hidden');
+        document.getElementById('new-password-section').classList.add('hidden');
+        document.getElementById('confirm-new-password-section').classList.add('hidden');
+        document.getElementById('forgot-password-submit-btn').textContent = 'Send Verification Code';
+    }
+    loginFormEl.classList.remove('hidden');
+}
+
+// Show forgot password form
+function showForgotPassword() {
+    const loginFormEl = document.getElementById('login-form');
+    const forgotPasswordFormEl = document.getElementById('forgot-password-form');
+    
+    loginFormEl.classList.add('hidden');
+    if (forgotPasswordFormEl) {
+        forgotPasswordFormEl.classList.remove('hidden');
+    }
+}
+
+// Send reset code
+async function sendResetCode() {
+    const email = document.getElementById('forgot-email').value.trim();
+    if (!email) {
+        showMessage('Please enter your email address', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/forgot-password/send-code`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+        });
+        
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.detail || 'Failed to send verification code');
+        }
+        
+        showMessage('Verification code sent to your email', 'success');
+        document.getElementById('verification-code-section').classList.remove('hidden');
+        document.getElementById('forgot-password-submit-btn').textContent = 'Verify Code';
+    } catch (error) {
+        showMessage(error.message, 'error');
+    }
+}
+
+// Handle forgot password form submit
+async function handleForgotPasswordSubmit() {
+    const email = document.getElementById('forgot-email').value.trim();
+    const verificationCode = document.getElementById('forgot-verification-code').value;
+    const newPassword = document.getElementById('forgot-new-password').value;
+    const confirmPassword = document.getElementById('forgot-confirm-password').value;
+    
+    const verificationSection = document.getElementById('verification-code-section');
+    const newPasswordSection = document.getElementById('new-password-section');
+    const confirmPasswordSection = document.getElementById('confirm-new-password-section');
+    
+    // Step 1: Send verification code
+    if (!verificationSection.classList.contains('hidden') && !verificationCode) {
+        await sendResetCode();
+        return;
+    }
+    
+    // Step 2: Verify code and show password fields
+    if (verificationCode && newPasswordSection.classList.contains('hidden')) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/forgot-password/verify-code`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, code: verificationCode }),
+            });
+            
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.detail || 'Invalid verification code');
+            }
+            
+            showMessage('Code verified. Please enter your new password', 'success');
+            newPasswordSection.classList.remove('hidden');
+            confirmPasswordSection.classList.remove('hidden');
+            document.getElementById('forgot-password-submit-btn').textContent = 'Reset Password';
+            return;
+        } catch (error) {
+            showMessage(error.message, 'error');
+            return;
+        }
+    }
+    
+    // Step 3: Reset password
+    if (newPassword && confirmPassword) {
+        if (newPassword !== confirmPassword) {
+            showMessage('Passwords do not match', 'error');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/forgot-password/reset`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, code: verificationCode, new_password: newPassword }),
+            });
+            
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.detail || 'Failed to reset password');
+            }
+            
+            showMessage('Password reset successfully. Please login with your new password', 'success');
+            setTimeout(() => {
+                showLoginFromForgot();
+            }, 1500);
+        } catch (error) {
+            showMessage(error.message, 'error');
+        }
+    }
 }
 
 // Show message
@@ -867,3 +1043,7 @@ window.toggleSuggestion = toggleSuggestion;
 window.useTopic = useTopic;
 window.hideAuthModal = hideAuthModal;
 window.downloadMindmap = downloadMindmap;
+window.showLoginFromRegister = showLoginFromRegister;
+window.showLoginFromForgot = showLoginFromForgot;
+window.showForgotPassword = showForgotPassword;
+window.sendResetCode = sendResetCode;

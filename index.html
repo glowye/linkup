@@ -165,7 +165,10 @@
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-sm font-medium text-gray-700">Password</label>
+                            <a href="#" onclick="event.preventDefault(); showForgotPassword();" class="text-sm text-blue-600 hover:text-blue-800 underline">Forgot password?</a>
+                        </div>
                         <input type="password" id="login-password" required
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
@@ -180,25 +183,96 @@
                 <h2 class="text-xl font-semibold mb-4">Register</h2>
                 <form id="register-form-element" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Username <span class="text-red-500">*</span>
+                        </label>
                         <input type="text" id="register-username" required
+                            placeholder="English name"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Email <span class="text-red-500">*</span>
+                        </label>
                         <input type="email" id="register-email" required
+                            placeholder="Email address"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Password <span class="text-red-500">*</span>
+                        </label>
                         <input type="password" id="register-password" required
+                            placeholder="Password"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Confirm Password <span class="text-red-500">*</span>
+                        </label>
+                        <input type="password" id="register-password-confirm" required
+                            placeholder="Confirm password"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
                     </div>
                     <button type="submit" class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">
                         Register
                     </button>
+                    <p class="text-center text-sm text-gray-600 mt-4">
+                        Already have an account? 
+                        <a href="#" onclick="event.preventDefault(); showLoginFromRegister();" class="text-blue-600 hover:text-blue-800 underline">Login</a>
+                    </p>
                 </form>
-                </div>
+            </div>
+            
+            <!-- Forgot Password Form -->
+            <div id="forgot-password-form" class="hidden">
+                <h2 class="text-xl font-semibold mb-4">Reset Password</h2>
+                <form id="forgot-password-form-element" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Email <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" id="forgot-email" required
+                            placeholder="Enter your email address"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div id="verification-code-section" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Verification Code <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <input type="text" id="forgot-verification-code" required
+                                placeholder="Enter verification code"
+                                class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button type="button" id="resend-code-btn" onclick="sendResetCode()" 
+                                class="px-4 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50 whitespace-nowrap">
+                                Resend
+                            </button>
+                        </div>
+                    </div>
+                    <div id="new-password-section" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            New Password <span class="text-red-500">*</span>
+                        </label>
+                        <input type="password" id="forgot-new-password" required
+                            placeholder="Enter new password"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div id="confirm-new-password-section" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Confirm New Password <span class="text-red-500">*</span>
+                        </label>
+                        <input type="password" id="forgot-confirm-password" required
+                            placeholder="Confirm new password"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button type="submit" id="forgot-password-submit-btn" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">
+                        Send Verification Code
+                    </button>
+                    <p class="text-center text-sm text-gray-600 mt-4">
+                        <a href="#" onclick="event.preventDefault(); showLoginFromForgot();" class="text-blue-600 hover:text-blue-800 underline">Back to Login</a>
+                    </p>
+                </form>
             </div>
         </div>
 
