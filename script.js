@@ -498,13 +498,17 @@ function showAuthModal() {
     const authSectionEl = document.getElementById('auth-section');
     const loginFormEl = document.getElementById('login-form');
     const registerFormEl = document.getElementById('register-form');
+    const forgotPasswordFormEl = document.getElementById('forgot-password-form');
     
     // Show modal
     authSectionEl.classList.remove('hidden');
     authSectionEl.style.display = 'flex';
     
-    // Show login form by default, hide register form
+    // Show login form by default, hide register and forgot password forms
     registerFormEl.classList.add('hidden');
+    if (forgotPasswordFormEl) {
+        forgotPasswordFormEl.classList.add('hidden');
+    }
     loginFormEl.classList.remove('hidden');
 }
 
