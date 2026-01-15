@@ -684,13 +684,14 @@ async function handleForgotPasswordSubmit() {
     const newPasswordSection = document.getElementById('new-password-section');
     const confirmPasswordSection = document.getElementById('confirm-new-password-section');
     
-    // Step 1: Send verification code
-    if (!verificationSection.classList.contains('hidden') && !verificationCode) {
+    // Step 1: Send verification code (if verification section is hidden, this is the first step)
+    if (verificationSection.classList.contains('hidden')) {
+        // First step: send verification code
         await sendResetCode();
         return;
     }
     
-    // Step 2: Verify code and show password fields
+    // Step 2: Verify code and show password fields (if verification code is entered but password fields are hidden)
     if (verificationCode && newPasswordSection.classList.contains('hidden')) {
         try {
             const response = await fetch(`${API_BASE_URL}/forgot-password/verify-code`, {
@@ -717,10 +718,15 @@ async function handleForgotPasswordSubmit() {
         }
     }
     
-    // Step 3: Reset password
+    // Step 3: Reset password (if password fields are visible and filled)
     if (newPassword && confirmPassword) {
         if (newPassword !== confirmPassword) {
             showMessage('Passwords do not match', 'error');
+            return;
+        }
+        
+        if (!verificationCode) {
+            showMessage('Please enter the verification code', 'error');
             return;
         }
         
@@ -745,6 +751,9 @@ async function handleForgotPasswordSubmit() {
         } catch (error) {
             showMessage(error.message, 'error');
         }
+    } else if (verificationCode && !newPassword) {
+        // If verification code is entered but password is not, show password fields
+        showMessage('Please verify the code first', 'error');
     }
 }
 
