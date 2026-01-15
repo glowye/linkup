@@ -157,21 +157,9 @@ function setupEventListeners() {
             console.error('register-form element not found');
         }
         
-        // Ensure home page is visible (not hidden) when showing modal
-        // The modal should overlay on top of the content, not hide it
-        const homePageEl = document.getElementById('home-page');
-        const galleryPageEl = document.getElementById('gallery-page');
-        const recordsPageEl = document.getElementById('records-page');
-        
-        // Make sure at least one page is visible (the current active page)
-        if (homePageEl && homePageEl.classList.contains('hidden') && 
-            galleryPageEl && galleryPageEl.classList.contains('hidden') &&
-            recordsPageEl && recordsPageEl.classList.contains('hidden')) {
-            // If all pages are hidden, show home page
-            homePageEl.classList.remove('hidden');
-        }
-        
-        // Show modal (this will overlay on top of the content)
+        // Don't modify page visibility - just show the modal overlay
+        // The modal will overlay on top of whatever page is currently visible
+        // Show modal (this will overlay on top of the content with a semi-transparent background)
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
         console.log('Auth modal shown');
@@ -203,21 +191,9 @@ function setupEventListeners() {
             return;
         }
         
-        // Ensure home page is visible (not hidden) when showing modal
-        // The modal should overlay on top of the content, not hide it
-        const homePageEl = document.getElementById('home-page');
-        const galleryPageEl = document.getElementById('gallery-page');
-        const recordsPageEl = document.getElementById('records-page');
-        
-        // Make sure at least one page is visible (the current active page)
-        if (homePageEl && homePageEl.classList.contains('hidden') && 
-            galleryPageEl && galleryPageEl.classList.contains('hidden') &&
-            recordsPageEl && recordsPageEl.classList.contains('hidden')) {
-            // If all pages are hidden, show home page
-            homePageEl.classList.remove('hidden');
-        }
-        
-        // Show modal (this will overlay on top of the content)
+        // Don't modify page visibility - just show the modal overlay
+        // The modal will overlay on top of whatever page is currently visible
+        // Show modal (this will overlay on top of the content with a semi-transparent background)
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
         
