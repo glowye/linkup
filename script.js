@@ -512,13 +512,9 @@ function showAuthModal() {
     const registerFormEl = document.getElementById('register-form');
     const forgotPasswordFormEl = document.getElementById('forgot-password-form');
     
-    // Ensure home page is visible (not hidden) when showing modal
-    const homePageEl = document.getElementById('home-page');
-    if (homePageEl && homePageEl.classList.contains('hidden')) {
-        homePageEl.classList.remove('hidden');
-    }
-    
-    // Show modal
+    // Don't modify page visibility - just show the modal overlay
+    // The modal will overlay on top of whatever page is currently visible
+    // Show modal (this will overlay on top of the content with a semi-transparent background)
     authSectionEl.classList.remove('hidden');
     authSectionEl.style.display = 'flex';
     
