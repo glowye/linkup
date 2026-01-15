@@ -157,28 +157,31 @@ function setupEventListeners() {
             console.error('register-form element not found');
         }
         
-        // Don't modify page visibility - just show the modal overlay
-        // The modal will overlay on top of whatever page is currently visible
-        // Ensure we're on home page if no page is currently visible
+        // Ensure home page is visible before showing modal
+        // This prevents the page from disappearing when modal is shown
         const homePageEl = document.getElementById('home-page');
         const galleryPageEl = document.getElementById('gallery-page');
         const recordsPageEl = document.getElementById('records-page');
         
-        // Check if any page is visible
-        const hasVisiblePage = (homePageEl && !homePageEl.classList.contains('hidden')) ||
-                               (galleryPageEl && !galleryPageEl.classList.contains('hidden')) ||
-                               (recordsPageEl && !recordsPageEl.classList.contains('hidden'));
+        // Always ensure at least one page is visible
+        // Check current page visibility
+        const homeVisible = homePageEl && !homePageEl.classList.contains('hidden');
+        const galleryVisible = galleryPageEl && !galleryPageEl.classList.contains('hidden');
+        const recordsVisible = recordsPageEl && !recordsPageEl.classList.contains('hidden');
         
         // If no page is visible, show home page
-        if (!hasVisiblePage && homePageEl) {
-            homePageEl.classList.remove('hidden');
-            console.log('No page visible, showing home page');
+        if (!homeVisible && !galleryVisible && !recordsVisible) {
+            if (homePageEl) {
+                homePageEl.classList.remove('hidden');
+                console.log('No page visible, showing home page');
+            }
         }
         
         // Show modal (this will overlay on top of the content with a semi-transparent background)
+        // The modal should NOT hide the background content
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
-        console.log('Auth modal shown');
+        console.log('Auth modal shown, home page should be visible behind it');
         
         // Show login form, hide register and forgot password forms
         if (registerFormEl) {
@@ -207,25 +210,28 @@ function setupEventListeners() {
             return;
         }
         
-        // Don't modify page visibility - just show the modal overlay
-        // The modal will overlay on top of whatever page is currently visible
-        // Ensure we're on home page if no page is currently visible
+        // Ensure home page is visible before showing modal
+        // This prevents the page from disappearing when modal is shown
         const homePageEl = document.getElementById('home-page');
         const galleryPageEl = document.getElementById('gallery-page');
         const recordsPageEl = document.getElementById('records-page');
         
-        // Check if any page is visible
-        const hasVisiblePage = (homePageEl && !homePageEl.classList.contains('hidden')) ||
-                               (galleryPageEl && !galleryPageEl.classList.contains('hidden')) ||
-                               (recordsPageEl && !recordsPageEl.classList.contains('hidden'));
+        // Always ensure at least one page is visible
+        // Check current page visibility
+        const homeVisible = homePageEl && !homePageEl.classList.contains('hidden');
+        const galleryVisible = galleryPageEl && !galleryPageEl.classList.contains('hidden');
+        const recordsVisible = recordsPageEl && !recordsPageEl.classList.contains('hidden');
         
         // If no page is visible, show home page
-        if (!hasVisiblePage && homePageEl) {
-            homePageEl.classList.remove('hidden');
-            console.log('No page visible, showing home page');
+        if (!homeVisible && !galleryVisible && !recordsVisible) {
+            if (homePageEl) {
+                homePageEl.classList.remove('hidden');
+                console.log('No page visible, showing home page');
+            }
         }
         
         // Show modal (this will overlay on top of the content with a semi-transparent background)
+        // The modal should NOT hide the background content
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
         
@@ -544,25 +550,28 @@ function showAuthModal() {
     const registerFormEl = document.getElementById('register-form');
     const forgotPasswordFormEl = document.getElementById('forgot-password-form');
     
-    // Don't modify page visibility - just show the modal overlay
-    // The modal will overlay on top of whatever page is currently visible
-    // Ensure we're on home page if no page is currently visible
+    // Ensure home page is visible before showing modal
+    // This prevents the page from disappearing when modal is shown
     const homePageEl = document.getElementById('home-page');
     const galleryPageEl = document.getElementById('gallery-page');
     const recordsPageEl = document.getElementById('records-page');
     
-    // Check if any page is visible
-    const hasVisiblePage = (homePageEl && !homePageEl.classList.contains('hidden')) ||
-                           (galleryPageEl && !galleryPageEl.classList.contains('hidden')) ||
-                           (recordsPageEl && !recordsPageEl.classList.contains('hidden'));
+    // Always ensure at least one page is visible
+    // Check current page visibility
+    const homeVisible = homePageEl && !homePageEl.classList.contains('hidden');
+    const galleryVisible = galleryPageEl && !galleryPageEl.classList.contains('hidden');
+    const recordsVisible = recordsPageEl && !recordsPageEl.classList.contains('hidden');
     
     // If no page is visible, show home page
-    if (!hasVisiblePage && homePageEl) {
-        homePageEl.classList.remove('hidden');
-        console.log('No page visible, showing home page');
+    if (!homeVisible && !galleryVisible && !recordsVisible) {
+        if (homePageEl) {
+            homePageEl.classList.remove('hidden');
+            console.log('No page visible, showing home page');
+        }
     }
     
     // Show modal (this will overlay on top of the content with a semi-transparent background)
+    // The modal should NOT hide the background content
     authSectionEl.classList.remove('hidden');
     authSectionEl.style.display = 'flex';
     

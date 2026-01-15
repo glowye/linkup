@@ -95,6 +95,14 @@
             z-index: 10;
             position: absolute;
         }
+        /* Ensure home page content is visible behind modal */
+        #home-page, #gallery-page, #records-page {
+            position: relative;
+            z-index: 1;
+        }
+        #auth-section {
+            z-index: 9999;
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
