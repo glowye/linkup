@@ -652,6 +652,9 @@ async function sendResetCode() {
     }
     
     try {
+        console.log('Sending reset code to:', email);
+        console.log('API_BASE_URL:', API_BASE_URL);
+        
         const response = await fetch(`${API_BASE_URL}/forgot-password/send-code`, {
             method: 'POST',
             headers: {
@@ -660,16 +663,23 @@ async function sendResetCode() {
             body: JSON.stringify({ email }),
         });
         
+        console.log('Response status:', response.status);
+        
         const data = await response.json();
+        console.log('Response data:', data);
+        
         if (!response.ok) {
             throw new Error(data.detail || 'Failed to send verification code');
         }
         
-        showMessage('Verification code sent to your email', 'success');
+        // Note: Currently, verification codes are logged to server logs only
+        // In production, this should send an actual email
+        showMessage('Verification code generated. Please check server logs or contact support for the code.', 'success');
         document.getElementById('verification-code-section').classList.remove('hidden');
         document.getElementById('forgot-password-submit-btn').textContent = 'Verify Code';
     } catch (error) {
-        showMessage(error.message, 'error');
+        console.error('Error sending reset code:', error);
+        showMessage(error.message || 'Failed to send verification code. Please try again.', 'error');
     }
 }
 
