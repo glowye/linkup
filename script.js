@@ -159,6 +159,22 @@ function setupEventListeners() {
         
         // Don't modify page visibility - just show the modal overlay
         // The modal will overlay on top of whatever page is currently visible
+        // Ensure we're on home page if no page is currently visible
+        const homePageEl = document.getElementById('home-page');
+        const galleryPageEl = document.getElementById('gallery-page');
+        const recordsPageEl = document.getElementById('records-page');
+        
+        // Check if any page is visible
+        const hasVisiblePage = (homePageEl && !homePageEl.classList.contains('hidden')) ||
+                               (galleryPageEl && !galleryPageEl.classList.contains('hidden')) ||
+                               (recordsPageEl && !recordsPageEl.classList.contains('hidden'));
+        
+        // If no page is visible, show home page
+        if (!hasVisiblePage && homePageEl) {
+            homePageEl.classList.remove('hidden');
+            console.log('No page visible, showing home page');
+        }
+        
         // Show modal (this will overlay on top of the content with a semi-transparent background)
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
@@ -193,6 +209,22 @@ function setupEventListeners() {
         
         // Don't modify page visibility - just show the modal overlay
         // The modal will overlay on top of whatever page is currently visible
+        // Ensure we're on home page if no page is currently visible
+        const homePageEl = document.getElementById('home-page');
+        const galleryPageEl = document.getElementById('gallery-page');
+        const recordsPageEl = document.getElementById('records-page');
+        
+        // Check if any page is visible
+        const hasVisiblePage = (homePageEl && !homePageEl.classList.contains('hidden')) ||
+                               (galleryPageEl && !galleryPageEl.classList.contains('hidden')) ||
+                               (recordsPageEl && !recordsPageEl.classList.contains('hidden'));
+        
+        // If no page is visible, show home page
+        if (!hasVisiblePage && homePageEl) {
+            homePageEl.classList.remove('hidden');
+            console.log('No page visible, showing home page');
+        }
+        
         // Show modal (this will overlay on top of the content with a semi-transparent background)
         authSectionEl.classList.remove('hidden');
         authSectionEl.style.display = 'flex';
@@ -514,6 +546,22 @@ function showAuthModal() {
     
     // Don't modify page visibility - just show the modal overlay
     // The modal will overlay on top of whatever page is currently visible
+    // Ensure we're on home page if no page is currently visible
+    const homePageEl = document.getElementById('home-page');
+    const galleryPageEl = document.getElementById('gallery-page');
+    const recordsPageEl = document.getElementById('records-page');
+    
+    // Check if any page is visible
+    const hasVisiblePage = (homePageEl && !homePageEl.classList.contains('hidden')) ||
+                           (galleryPageEl && !galleryPageEl.classList.contains('hidden')) ||
+                           (recordsPageEl && !recordsPageEl.classList.contains('hidden'));
+    
+    // If no page is visible, show home page
+    if (!hasVisiblePage && homePageEl) {
+        homePageEl.classList.remove('hidden');
+        console.log('No page visible, showing home page');
+    }
+    
     // Show modal (this will overlay on top of the content with a semi-transparent background)
     authSectionEl.classList.remove('hidden');
     authSectionEl.style.display = 'flex';
