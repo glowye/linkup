@@ -374,7 +374,7 @@ function loadTopicCards() {
             title: 'How to Listen to Improve Communication Efficiency', 
             desc: 'Master the art of active listening to enhance understanding',
             mindmapId: 'listening-mindmap',
-            filename: 'How to Listen More Effectively for Better Communication.png',
+            filename: 'How to Listen to Narrow Communication Blind Spots.png',
             tags: ['listening', 'communication']
         },
         { 
