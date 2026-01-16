@@ -372,7 +372,6 @@ function loadTopicCards() {
         { 
             icon: '👂', 
             title: 'How to Listen to Improve Communication Efficiency', 
-            desc: 'Master the art of active listening to enhance understanding',
             mindmapId: 'listening-mindmap',
             filename: 'How to Listen to Narrow Communication Blind Spots.png',
             tags: ['listening', 'communication']
@@ -380,42 +379,23 @@ function loadTopicCards() {
         { 
             icon: '💬', 
             title: 'How to Respond to Guide Others\' Needs', 
-            desc: 'Learn effective response techniques to steer conversations',
             mindmapId: 'responding-mindmap',
             filename: 'How to Respond to Elicit the Other Person Needs.png',
             tags: ['responding', 'needs']
         },
         { 
             icon: '👤', 
-            title: 'How to Read People to Use Communication Strategies', 
-            desc: 'Develop skills to understand others and adapt your approach',
-            mindmapId: 'reading-people-mindmap',
-            filename: null, // Not available yet
-            tags: ['reading', 'strategies']
+            title: 'How to Comfort Someone and Become Their Emotional Anchor', 
+            mindmapId: 'comfort-mindmap',
+            filename: 'How to Comfort Someone and Become Their Emotional Anchor.png',
+            tags: ['comfort', 'strategies']
         },
         { 
             icon: '🙋', 
-            title: 'How to Ask for Help to Get More Resources', 
-            desc: 'Strategies for requesting assistance effectively',
+            title: 'How to Ask for Help to Get More Resources',
             mindmapId: 'asking-help-mindmap',
             filename: 'How to Ask for Help and Gain More Resources.png',
             tags: ['help', 'resources']
-        },
-        { 
-            icon: '🚫', 
-            title: 'How to Refuse to Manage Relationship Boundaries', 
-            desc: 'Say no gracefully while maintaining healthy relationships',
-            mindmapId: 'refusing-mindmap',
-            filename: null, // Not available yet
-            tags: ['refusing', 'boundaries']
-        },
-        { 
-            icon: '💡', 
-            title: 'How to Persuade to Get Others\' Support', 
-            desc: 'Build compelling arguments that win support',
-            mindmapId: 'persuading-mindmap',
-            filename: null, // Not available yet
-            tags: ['persuading', 'support']
         },
     ];
 
