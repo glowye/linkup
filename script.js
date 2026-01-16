@@ -382,7 +382,7 @@ function loadTopicCards() {
             title: 'How to Respond to Guide Others\' Needs', 
             desc: 'Learn effective response techniques to steer conversations',
             mindmapId: 'responding-mindmap',
-            filename: 'How to Respond to Elicit the Other Person\'s Needs.png',
+            filename: 'How to Respond to Elicit the Other Person Needs.png',
             tags: ['responding', 'needs']
         },
         { 
