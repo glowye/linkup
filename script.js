@@ -336,30 +336,7 @@ function setupEventListeners() {
         });
     }
 
-    // Scenario buttons
-    document.querySelectorAll('.scenario-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active class from all buttons
-            document.querySelectorAll('.scenario-btn').forEach(b => {
-                b.classList.remove('border-pink-500', 'bg-pink-50', 'text-pink-700');
-                b.classList.add('border-gray-300');
-            });
-            // Add active class to clicked button
-            btn.classList.add('border-pink-500', 'bg-pink-50', 'text-pink-700');
-            btn.classList.remove('border-gray-300');
-            
-            // Update placeholder based on scenario
-            const scenario = btn.dataset.scenario;
-            const textarea = document.getElementById('issue-question');
-            const placeholders = {
-                workplace: "Describe your workplace communication challenge... (e.g., 'I need to give feedback to a team member', 'My manager doesn't listen to my ideas')",
-                family: "Describe your family communication challenge... (e.g., 'I struggle to set boundaries with my parents', 'My partner and I argue about money')",
-                social: "Describe your social communication challenge... (e.g., 'I'm nervous about networking events', 'I don't know how to make small talk')",
-                conflict: "Describe your conflict situation... (e.g., 'I need to resolve a disagreement with a colleague', 'My friend and I had a misunderstanding')"
-            };
-            textarea.placeholder = placeholders[scenario] || textarea.placeholder;
-        });
-    });
+
 
     // Refresh topics button
     // Removed refresh-topics button - now using fixed Communication Toolkit
