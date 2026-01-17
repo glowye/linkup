@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>LINKUP - Professional Communication Coach</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -31,11 +34,6 @@
         }
         .topic-card:hover {
             transform: translateY(-2px);
-        }
-        .scenario-btn.active {
-            border-color: rgba(215,0,80,1);
-            background-color: rgba(215,0,80,0.1);
-            color: rgba(215,0,80,1);
         }
         @keyframes fadeIn {
             from {
@@ -290,14 +288,13 @@
             <div class="max-w-6xl mx-auto">
                 <!-- Hero Section -->
                 <div class="bg-gradient-to-r from-pink-500 to-red-500 rounded-lg shadow-lg p-8 mb-8 text-white">
-                    <h1 class="text-4xl font-bold mb-3 text-center">Professional Communication Coach</h1>
-                    <p class="text-xl text-center mb-2">Get expert guidance with specific scripts, actionable steps, and proven communication strategies</p>
-                    <p class="text-sm text-center opacity-90">⚡ Powered by AI 🗣️ Real Scripts 📚 Proven Strategies</p>
+                    <h1 class="text-4xl font-bold mb-3 text-center">See your patterns. Change your conversations.</h1>
+                    <p class="text-xl text-center mb-2">A space to reflect on difficult conversations</p>
                 </div>
 
                 <!-- Main Input Form (Moved up for better UX) -->
                 <div class="bg-white rounded-lg shadow-md p-8 mb-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Describe Your Communication Challenge</h3>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Describe a conversation you feel stuck in right now</h3>
                     <form id="issue-form" class="space-y-4">
                         <div>
                             <textarea id="issue-question" rows="6" required
@@ -310,7 +307,6 @@
                         </button>
                     </form>
                 </div>
-
 
                 <!-- Communication Toolkit (沟通锦囊) -->
                 <div class="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -524,7 +520,7 @@
     <!-- Message Notification -->
     <div id="message" class="fixed top-4 right-4 p-4 rounded-lg shadow-lg hidden z-50"></div>
 
-    <script src="script.js"></script>
-    <script src="books-data.js"></script>
+    <script src="script.js?v=20260115"></script>
+    <script src="books-data.js?v=20260115"></script>
 </body>
 </html>
